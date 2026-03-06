@@ -15,7 +15,7 @@ export function AboutSection() {
     >
       <div className="grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.2fr)] gap-8 h-full">
         <div className="flex flex-col gap-4">
-          <div className="relative aspect-[3/4] border border-white/40 overflow-hidden bg-white/5">
+          <div className="relative aspect-[1/1] border border-white/40 overflow-hidden bg-white/5">
             {!imgError ? (
               <Image
                 src="/profile-bw.jpg"
@@ -32,66 +32,81 @@ export function AboutSection() {
               </div>
             )}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/60 to-transparent p-3 text-[11px] tracking-[0.18em] uppercase">
-              <div>PARTICLE ID</div>
+              <div>PARTICLE ID:</div>
               <div className="text-fgMuted mt-1">
-                CS @ UCI | AI/ML/CV | Full-Stack | Embedded 
+                HS-13
+              </div>
+              <div className="mt-2">PRIMARY DOMAINS:</div>
+              <div className="text-fgMuted mt-1 leading-tight">
+                Machine Learning · Data Systems · Software Engineering
               </div>
             </div>
           </div>
-          <div className="border border-white/30 text-[11px] p-3 space-y-1">
+          <div className="border border-white/30 text-[11px] p-3 space-y-1 uppercase tracking-[0.05em]">
             <div className="flex justify-between">
-              <span className="text-fgMuted">STATE</span>
-              <span>COHERENT</span>
+              <span className="text-fgMuted font-bold">STATE</span>
+              <span>ACTIVE</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-fgMuted">FOCUS</span>
-              <span> AI/ML · Computer Vision · Full-stack · Embedded Systems</span>
+              <span className="text-fgMuted font-bold">ENVIRONMENT</span>
+              <span>UC IRVINE</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-fgMuted">LANGUAGES</span>
-              <span> Python · C/C++ · Java · JS · TS · HTML · CSS · R </span>
+              <span className="text-fgMuted font-bold">OBSERVATION</span>
+              <span>ONGOING</span>
             </div>
           </div>
         </div>
-        <div className="border border-white/30 p-4 md:p-6 text-sm leading-relaxed space-y-5">
-          <p className="font-sans text-[13px] md:text-[14px]">
-            Observer state: creative engineer. Architecting entangled systems—
-            full-stack, ML, and embedded systems—where code and data couple like
-            quantum correlations.
-          </p>
-          <p className="text-fgMuted text-xs md:text-[13px]">
-            Work spans full-stack platforms, ML-assisted tools, and WebGL/Three.js
-            simulations. Emphasis on performance, accessibility, and clean
-            architecture under technically ambitious interfaces.
-          </p>
-          <div className="grid md:grid-cols-2 gap-4 text-[11px]">
-            <div className="space-y-1">
-              <div className="uppercase tracking-[0.18em] text-fgMuted">
-                STACK
-              </div>
-              <ul className="space-y-1">
-                <li>Next.js, React, R3F, Tailwind</li>
-                <li>Node, Python, FastAPI</li>
-                <li>PostgreSQL, Redis, Prisma</li>
-                <li>ML: PyTorch, NumPy, Pandas</li>
-              </ul>
+        <div className="border border-white/30 p-4 md:p-6 text-sm leading-relaxed space-y-6">
+          <div className="space-y-3">
+            <p className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
+              <span className="text-white font-semibold">
+                [PARTICLE PROFILE]
+              </span> 
+            </p>
+            <p className = "text-fgMuted text-xs md:text-[13px]">
+              Particle HS-13 is a curiosity-driven engineering particle primarily observed building computational systems that transform complex data into useful signals. Its work frequently involves machine learning, data-driven applications, and full-stack software systems where algorithms, infrastructure, and interfaces interact as a unified system.
+            </p>
+            <p className="text-fgMuted text-xs md:text-[13px]">
+              Outside the lab, the particle exhibits exploratory behavior through reading science fiction, diving into technical rabbit holes, experimenting with hardware, and building side projects that combine software with real-world systems. These seemingly unrelated interests often influence how problems are approached, leading to creative technical solutions.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
+              <span className = "text-white font semibold">
+                [OBSERVED TRAJECTORY]
+              </span>
             </div>
-            <div className="space-y-1">
-              <div className="uppercase tracking-[0.18em] text-fgMuted">
-                INTEREST VECTORS
+            <p className="text-fgMuted text-xs md:text-[13px]">
+              Originating from Stockton, California, HS-13 followed a trajectory shaped by persistence, curiosity, and a drive to build things that didn't previously exist. Transitioning from a small Central Valley environment to UC Irvine required adapting to new academic and technical challenges while navigating unfamiliar systems and opportunities.
+            </p>
+            <p className="text-fgMuted text-xs md:text-[13px]">
+              Rather than treating these challenges as barriers, the particle used them as catalysts for experimentation — pursuing difficult projects, exploring machine learning and systems engineering, and continuously expanding its technical scope.
+            </p>
+            <p className="text-fgMuted text-xs md:text-[13px] italic">
+              Current trajectory suggests continued movement toward building intelligent systems that connect data, algorithms, and real-world applications.
+            </p>
+          </div>
+
+          <div className="text-[11px]">
+            <div className="space-y-2">
+              <div className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
+                <span className= "text-white font semibold">
+                  [ACTIVE EXPERIMENTS]
+                  </span>
               </div>
-              <ul className="space-y-1">
-                <li>Interactive simulation and viz</li>
-                <li>Tooling and DX</li>
-                <li>Real-time and 3D systems</li>
-                <li>Quantum-inspired UI</li>
+              <ul className="space-y-1 text-fgMuted list-disc list-inside">
+                <li>Machine learning systems & applied modeling</li>
+                <li>Data-driven full-stack applications</li>
+                <li>Computer vision & intelligent tools</li>
+                <li>Software translating data into insights</li>
               </ul>
             </div>
           </div>
           <div className="border-t border-dashed border-white/25 pt-4 text-[11px]">
-            <span className="text-fgMuted mr-2">NOTE</span>
-            Building systems that behave like controlled experiments—reproducible,
-            measurable, and ship-ready.
+            <span className="text-fgMuted mr-2">NOTE:</span>
+            HS-13 remains in a continuous learning state, frequently initiating new projects to explore emerging technologies and deepen its understanding of computational systems.
           </div>
         </div>
       </div>
