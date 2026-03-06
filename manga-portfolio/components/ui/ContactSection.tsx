@@ -66,15 +66,19 @@ export function ContactSection() {
           <div className="space-y-1">
             <div>
               <span className="text-fgMuted mr-2">Email</span>
-              <span>you@example.com</span>
+              <a href="mailto:harmees2@uci.edu" className="hover:text-white transition-colors">harmees2@uci.edu</a>
             </div>
             <div>
               <span className="text-fgMuted mr-2">GitHub</span>
-              <span>github.com/har-m33t</span>
+              <a href="https://github.com/har-m33t" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">github.com/har-m33t</a>
+            </div>
+            <div>
+              <span className="text-fgMuted mr-2">LinkedIn</span>
+              <a href="https://linkedin.com/in/harmeet-singh-uci" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">linkedin.com/in/harmeet-singh-uci</a>
             </div>
             <div>
               <span className="text-fgMuted mr-2">Location</span>
-              <span>Earth · PST</span>
+              <span>Irvine, CA · PST</span>
             </div>
           </div>
           <div className="border-t border-dashed border-white/25 pt-3 text-fgMuted">

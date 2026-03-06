@@ -52,6 +52,14 @@ export function AboutSection() {
               <span>UC IRVINE</span>
             </div>
             <div className="flex justify-between">
+              <span className="text-fgMuted font-bold">DEGREE</span>
+              <span>B.S. CS (Honors)</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-fgMuted font-bold">GPA</span>
+              <span>3.78</span>
+            </div>
+            <div className="flex justify-between">
               <span className="text-fgMuted font-bold">OBSERVATION</span>
               <span>ONGOING</span>
             </div>
@@ -62,9 +70,9 @@ export function AboutSection() {
             <p className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
               <span className="text-white font-semibold">
                 [PARTICLE PROFILE]
-              </span> 
+              </span>
             </p>
-            <p className = "text-fgMuted text-xs md:text-[13px]">
+            <p className="text-fgMuted text-xs md:text-[13px]">
               Particle HS-13 is a curiosity-driven engineering particle primarily observed building computational systems that transform complex data into useful signals. Its work frequently involves machine learning, data-driven applications, and full-stack software systems where algorithms, infrastructure, and interfaces interact as a unified system.
             </p>
             <p className="text-fgMuted text-xs md:text-[13px]">
@@ -74,9 +82,7 @@ export function AboutSection() {
 
           <div className="space-y-3">
             <div className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
-              <span className = "text-white font semibold">
-                [OBSERVED TRAJECTORY]
-              </span>
+              <span className="text-white font-semibold">[OBSERVED TRAJECTORY]</span>
             </div>
             <p className="text-fgMuted text-xs md:text-[13px]">
               Originating from Stockton, California, HS-13 followed a trajectory shaped by persistence, curiosity, and a drive to build things that didn't previously exist. Transitioning from a small Central Valley environment to UC Irvine required adapting to new academic and technical challenges while navigating unfamiliar systems and opportunities.
@@ -89,12 +95,31 @@ export function AboutSection() {
             </p>
           </div>
 
+          <div className="space-y-3">
+            <div className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
+              <span className="text-white font-semibold">[EDUCATION]</span>
+            </div>
+            <div className="text-[11px] space-y-2">
+              <div className="flex justify-between items-start">
+                <span className="font-semibold uppercase tracking-wider">University of California, Irvine</span>
+                <span className="text-fgMuted">Jun 2027</span>
+              </div>
+              <div className="text-fgMuted">B.S. Computer Science with Honors &mdash; GPA: 3.78</div>
+              <div className="text-fgMuted leading-relaxed">
+                <span className="text-white/70">Concentrations:</span> Machine Learning · Data Science · AI · Software Engineering
+              </div>
+              <div className="text-fgMuted leading-relaxed">
+                <span className="text-white/70">Coursework:</span> Python Series, C/C++, Statistics for CS, Software Engineering, Digital Design, Computer Networks, Data Structures &amp; Algorithms
+              </div>
+            </div>
+          </div>
+
           <div className="text-[11px]">
             <div className="space-y-2">
               <div className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
-                <span className= "text-white font semibold">
+                <span className="text-white font semibold">
                   [ACTIVE EXPERIMENTS]
-                  </span>
+                </span>
               </div>
               <ul className="space-y-1 text-fgMuted list-disc list-inside">
                 <li>Machine learning systems & applied modeling</li>

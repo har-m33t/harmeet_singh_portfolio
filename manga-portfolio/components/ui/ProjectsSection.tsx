@@ -5,24 +5,39 @@ import { motion } from "framer-motion";
 
 const projects = [
   {
-    title: "Neural Atlas",
-    tag: "R3F / DATA VIZ",
-    desc: "Interactive 3D map of research topics with node-based traversal and semantic zoom.",
-    role: "Full-stack · Visualization",
+    title: "ParcelIQ",
+    tag: "ML · CV · FULL-STACK",
+    date: "MAR 2026",
+    stack: "React · Vite · Tailwind · Mapbox GL JS · Flask · Python · OpenCV · Groq API · Scikit-learn",
+    bullets: [
+      "Built a hybrid ML risk engine blending deterministic modeling with a stacked ensemble (Gradient Boosting, MLP, Logistic Regression) to generate explainable property risk scores across 9 spatial features.",
+      "Developed a CV segmentation pipeline with test-time augmentation and ensemble voting, extracting parcel building footprints with up to 92% confidence.",
+      "Shipped a full-stack 3D Mapbox dashboard with toggleable layers, financial analytics, AI chat assistant, and automated PDF reporting.",
+    ],
     id: "EXP-01",
   },
   {
-    title: "Ghost Terminal",
-    tag: "FULL-STACK",
-    desc: "Web terminal that proxies real services behind a cinematic CLI interface.",
-    role: "Design · Backend · Infra",
+    title: "F1 Pit Stop Prediction",
+    tag: "RL · ML · DATA VIZ",
+    date: "JAN 2026",
+    stack: "Python · Pandas · Seaborn · Matplotlib · Gymnasium · Stable-Baselines3",
+    bullets: [
+      "Developed a reinforcement learning model (DQN) to determine optimal, track-specific F1 pit stop strategies, leveraging a predictive ML model to simulate race dynamics.",
+      "Implemented comprehensive data preprocessing and feature engineering—extracting lap-time degradation trends, tire-wear rates, track temperature fluctuations, and safety car event indicators.",
+      "Built 2D and 3D interactive visualizations in matplotlib to compare predicted vs. actual pit-stop strategies for 20 racers, facilitating rapid strategic insights.",
+    ],
     id: "EXP-02",
   },
   {
-    title: "Kinetic Notebook",
-    tag: "ML / TOOLS",
-    desc: "Notebook UI where models, datasets, and experiments are physical objects.",
-    role: "ML · UX · Frontend",
+    title: "Manga Portfolio",
+    tag: "3D · CREATIVE · FULL-STACK",
+    date: "MAR 2026",
+    stack: "Next.js · React Three Fiber · Framer Motion · Three.js · TypeScript · Tailwind",
+    bullets: [
+      "Architected an interactive quantum-themed portfolio rendered in WebGL with a navigable 3D node graph, particle system, and procedural electric-line materials.",
+      "Built custom GLSL shader materials and a three.js post-processing pipeline for the sci-fi aesthetic, including scanlines, bloom, and CRT noise effects.",
+      "Designed a reactive state-driven section navigation system using Zustand and Framer Motion for seamless panel transitions.",
+    ],
     id: "EXP-03",
   },
 ];
@@ -60,10 +75,17 @@ export function ProjectsSection() {
               <div className="font-sans text-sm uppercase leading-tight">
                 {p.title}
               </div>
-              <p className="text-xs text-fgMuted leading-relaxed">{p.desc}</p>
+              <div className="text-[10px] text-white/40 italic leading-snug">
+                {p.stack}
+              </div>
+              <ul className="space-y-1.5 text-[11px] text-fgMuted list-disc list-inside leading-relaxed">
+                {p.bullets.map((b, j) => (
+                  <li key={j}>{b}</li>
+                ))}
+              </ul>
             </div>
             <div className="border-t border-dashed border-white/25 text-[11px] px-4 py-2 flex justify-between items-center">
-              <span className="text-fgMuted">{p.role}</span>
+              <span className="text-fgMuted">{p.date}</span>
               <span className="text-[10px] text-fg/80">[ OBSERVE ]</span>
             </div>
           </motion.article>
