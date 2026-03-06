@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --font-dm-mono: "DM Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-space-grotesk: "Space Grotesk", system-ui, sans-serif;
+}
+
+body {
+  cursor: none;
+}
+
+/* Custom cursor (minimal dot / crosshair) */
+body::before {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  transform: translate(-50%, -50%);
+  top: var(--cursor-y, -100px);
+  left: var(--cursor-x, -100px);
+  z-index: 10000;
+  transition: transform 0.04s ease-out, border-radius 0.12s ease-out;
+}
+
+/* Grain + vignette */
+body::after {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.6) 70%
+  );
+  mix-blend-mode: soft-light;
+  opacity: 0.35;
+  z-index: 5;
+}
+
+/* Simple scanlines overlay */
+.scanlines::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.04) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: soft-light;
+  opacity: 0.35;
+  z-index: 1;
+}
+
+/* Simulator panel card */
+.sim-panel {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 0 50px rgba(0, 0, 0, 0.9);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(255, 255, 255, 0.05),
+      transparent 60%
+    ),
+    #000000;
+}
+
+/* Subtle glitch animation for transitions */
+@keyframes glitch-y {
+  0% {
+    clip-path: inset(0 0 0 0);
+  }
+  10% {
+    clip-path: inset(5% 0 0 0);
+  }
+  20% {
+    clip-path: inset(0 0 8% 0);
+  }
+  30% {
+    clip-path: inset(12% 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.glitch-mask {
+  animation: glitch-y 0.6s ease-out;
+}
