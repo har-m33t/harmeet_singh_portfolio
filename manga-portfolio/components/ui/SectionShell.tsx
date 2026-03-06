@@ -21,7 +21,7 @@ export function SectionShell({ title, subtitle, subLabel, children }: Props) {
 
   return (
     <motion.section
-      className="scanlines fixed inset-10 md:inset-16 border border-white/40 bg-black/85 backdrop-blur-sm sim-panel overflow-hidden z-20"
+      className="scanlines fixed inset-3 md:inset-8 border border-white/40 bg-black/85 backdrop-blur-sm sim-panel overflow-hidden z-20"
       initial={{ opacity: 0, scale: 0.96, y: 40 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96, y: -30 }}
