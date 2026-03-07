@@ -164,7 +164,7 @@ export function ContactSection() {
             </div>
             <div>
               <span className="text-fgMuted mr-2">LinkedIn</span>
-              <a href="https://linkedin.com/in/harmeet-singh-uci" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">linkedin.com/in/harmeet-singh-uci</a>
+              <a href="https://linkedin.com/in/harmeet-singh-uppal" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">linkedin.com/in/harmeet-singh-uppal</a>
             </div>
             <div>
               <span className="text-fgMuted mr-2">Location</span>
