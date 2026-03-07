@@ -6,6 +6,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Harmeet Singh — Quantum Entanglement Simulator",
   description: "Interactive portfolio as a quantum entanglement simulator. Navigate entangled nodes.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
