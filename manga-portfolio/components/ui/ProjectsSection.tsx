@@ -29,7 +29,7 @@ const projects = [
     id: "EXP-02",
   },
   {
-    title: "Manga Portfolio",
+    title: "Quantum Particle Simulator",
     tag: "3D · CREATIVE · FULL-STACK",
     date: "MAR 2026",
     stack: "Next.js · React Three Fiber · Framer Motion · Three.js · TypeScript · Tailwind",
