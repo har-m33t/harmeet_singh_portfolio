@@ -63,15 +63,15 @@ function Node({ id, position, label }: NodeProps) {
   const [hovered, setHovered] = useState(false);
   const { activeNode, setActiveNode, setTargetNode } = useNodeNavigation();
   const material = useMemo(
-    () => new NodeShaderMaterial({ transparent: true }),
+    () => new NodeShaderMaterial({ transparent: true }) as THREE.ShaderMaterial,
     []
   );
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
-    material.uTime = t;
-    material.uHover = hovered ? 1 : 0;
-    material.uActive = activeNode === id ? 1 : 0;
+    if (material.uniforms.uTime) material.uniforms.uTime.value = t;
+    if (material.uniforms.uHover) material.uniforms.uHover.value = hovered ? 1 : 0;
+    if (material.uniforms.uActive) material.uniforms.uActive.value = activeNode === id ? 1 : 0;
   });
 
   const isDimmed = activeNode && activeNode !== id;
@@ -148,6 +148,7 @@ export function NodeGraph() {
 
       {lineGeometries.map((geom, i) => (
         <group key={i}>
+          {/* @ts-expect-error: R3F line accepts geometry but JSX types conflict with SVGLineElement */}
           <line geometry={geom}>
             <lineBasicMaterial
               color="white"
@@ -156,6 +157,7 @@ export function NodeGraph() {
               depthWrite={false}
             />
           </line>
+          {/* @ts-expect-error: R3F line accepts geometry but JSX types conflict with SVGLineElement */}
           <line geometry={geom} material={electricMaterial} />
         </group>
       ))}

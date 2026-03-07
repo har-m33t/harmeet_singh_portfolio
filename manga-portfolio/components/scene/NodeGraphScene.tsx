@@ -32,7 +32,7 @@ export function NodeGraphScene() {
           <NodeGraph />
           <CameraRig />
 
-          <EffectComposer disableNormalPass>
+          <EffectComposer enableNormalPass={false}>
             <DepthOfField
               focusDistance={0.02}
               focalLength={0.025}
