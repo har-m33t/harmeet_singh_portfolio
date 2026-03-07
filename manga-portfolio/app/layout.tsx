@@ -29,6 +29,8 @@ export default function RootLayout({
       </head>
       <body className="bg-bg text-fg font-mono antialiased">
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
