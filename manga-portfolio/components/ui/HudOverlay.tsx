@@ -17,23 +17,19 @@ export function HudOverlay() {
     <>
       {!isPanelOpen && (
         <div className="pointer-events-none fixed inset-0 z-10 flex flex-col">
-          <div className="flex justify-between px-6 pt-5 text-[10px] tracking-[0.25em] uppercase text-fgMuted">
+          <div className="flex justify-between gap-4 px-4 pt-4 text-[10px] uppercase tracking-[0.22em] text-trace md:px-6 md:pt-5">
             <div className="space-y-1">
-              <div>[ ENTANGLEMENT MATRIX ]</div>
-              <div>[ OBSERVER: HARMEET SINGH ]</div>
+              <div>Entanglement matrix</div>
+              <div className="text-fgMuted">Observer: Harmeet Singh</div>
             </div>
-            <div className="text-right space-y-1">
-              <div>[ MODE: SIMULATION ]</div>
-              <div suppressHydrationWarning>
-                [ COHERENCE:{" "}
-                {new Date().toISOString().replace("T", " ").slice(0, 19)} ]
-              </div>
+            <div className="hidden text-right sm:block">
+              <div>Mode: simulation</div>
             </div>
           </div>
 
-          <div className="mt-auto mb-6 flex justify-between px-6 text-[10px] text-fgMuted uppercase tracking-[0.16em]">
-            <div>[ DRAG: ORBIT ] [ SCROLL: ZOOM ]</div>
-            <div>[ CLICK NODE: OBSERVE STATE ]</div>
+          <div className="mb-5 mt-auto flex flex-wrap justify-between gap-x-4 gap-y-1 px-4 text-[10px] uppercase tracking-[0.16em] text-trace md:px-6">
+            <div>Drag to orbit · scroll to zoom</div>
+            <div className="text-fgMuted">Click a node to observe it</div>
           </div>
         </div>
       )}

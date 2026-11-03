@@ -12,6 +12,8 @@ const config: Config = {
         bg: "#000000",
         fg: "#FFFFFF",
         fgMuted: "#BFBFBF",
+        /** Hairlines and tertiary text. Neutral grey — the palette is achromatic. */
+        trace: "#828282",
       },
       fontFamily: {
         mono: ["var(--font-dm-mono)", "ui-monospace", "SFMono-Regular", "monospace"],

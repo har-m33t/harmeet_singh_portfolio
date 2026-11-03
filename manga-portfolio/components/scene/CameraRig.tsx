@@ -5,10 +5,13 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useNodeNavigation } from "@/lib/useNodeNavigation";
 import { NODE_DEFS } from "@/lib/navigation";
+import { dragState } from "@/lib/dragState";
 
 const ZOOM_MIN = 5;
 const ZOOM_MAX = 40;
 const ZOOM_DEFAULT = 14;
+const DRAG_SPEED = 0.005;
+const ELEVATION_LIMIT = Math.PI / 2.6;
 
 export function CameraRig() {
   const { camera } = useThree();
@@ -17,9 +20,16 @@ export function CameraRig() {
   const currentZoom = useRef(ZOOM_DEFAULT);
   const targetPos = useRef(new THREE.Vector3(0, 0, ZOOM_DEFAULT));
   const sway = useRef({ x: 0, y: 0 });
+  /** Drag-applied rotation of the camera about the graph, in radians. */
+  const orbit = useRef({ azimuth: 0, elevation: 0 });
+  const drag = useRef<{ active: boolean; x: number; y: number }>({
+    active: false,
+    x: 0,
+    y: 0,
+  });
 
   useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
+    const handleMove = (e: PointerEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;
       const y = (e.clientY / window.innerHeight - 0.5) * 2;
       sway.current.x = x;
@@ -32,13 +42,50 @@ export function CameraRig() {
         "--cursor-y",
         `${e.clientY}px`
       );
+
+      if (drag.current.active) {
+        dragState.add(e.clientX - drag.current.x, e.clientY - drag.current.y);
+        orbit.current.azimuth -= (e.clientX - drag.current.x) * DRAG_SPEED;
+        orbit.current.elevation = THREE.MathUtils.clamp(
+          orbit.current.elevation - (e.clientY - drag.current.y) * DRAG_SPEED,
+          -ELEVATION_LIMIT,
+          ELEVATION_LIMIT
+        );
+        drag.current.x = e.clientX;
+        drag.current.y = e.clientY;
+      }
     };
+
+    const handleDown = (e: PointerEvent) => {
+      // Dragging orbits the graph; inside a panel the pointer belongs to the UI.
+      if ((e.target as HTMLElement | null)?.closest("[data-panel]")) return;
+      dragState.reset();
+      drag.current = { active: true, x: e.clientX, y: e.clientY };
+    };
+    const handleUp = () => {
+      drag.current.active = false;
+    };
+
     window.addEventListener("pointermove", handleMove);
-    return () => window.removeEventListener("pointermove", handleMove);
+    window.addEventListener("pointerdown", handleDown);
+    window.addEventListener("pointerup", handleUp);
+    window.addEventListener("pointercancel", handleUp);
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerdown", handleDown);
+      window.removeEventListener("pointerup", handleUp);
+      window.removeEventListener("pointercancel", handleUp);
+    };
   }, []);
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      // Only zoom when the wheel is over the scene itself. Listening on
+      // window and always preventing default swallowed scrolling inside
+      // the open panels, making their overflow unreachable.
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("[data-panel]")) return;
+
       e.preventDefault();
       const delta = e.deltaY > 0 ? 0.8 : -0.8;
       zoomDistance.current = THREE.MathUtils.clamp(
@@ -58,22 +105,23 @@ export function CameraRig() {
       0.08
     );
 
-    if (targetNode && targetNode !== "you") {
-      const meta = NODE_DEFS.find((n) => n.id === targetNode)!;
-      const dir = new THREE.Vector3(
-        meta.position[0],
-        meta.position[1],
-        meta.position[2]
-      )
-        .normalize()
-        .multiplyScalar(currentZoom.current);
-      targetPos.current.lerp(dir, 0.06);
-    } else {
-      targetPos.current.lerp(
-        new THREE.Vector3(0, 0, currentZoom.current),
-        0.06
-      );
+    const base =
+      targetNode && targetNode !== "you"
+        ? new THREE.Vector3(
+            ...NODE_DEFS.find((n) => n.id === targetNode)!.position
+          ).normalize()
+        : new THREE.Vector3(0, 0, 1);
+
+    // Apply the drag orbit around the graph before pulling out to zoom range.
+    const dir = base
+      .clone()
+      .applyAxisAngle(new THREE.Vector3(0, 1, 0), orbit.current.azimuth);
+    const right = new THREE.Vector3(0, 1, 0).cross(dir).normalize();
+    if (right.lengthSq() > 0.0001) {
+      dir.applyAxisAngle(right, orbit.current.elevation);
     }
+
+    targetPos.current.lerp(dir.multiplyScalar(currentZoom.current), 0.06);
 
     const swayOffset = new THREE.Vector3(
       sway.current.x * 0.7,

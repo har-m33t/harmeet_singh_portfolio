@@ -1,138 +1,149 @@
 "use client";
 
 import Image from "next/image";
-import { SectionShell } from "./SectionShell";
 import { useState } from "react";
+import { SectionShell } from "./SectionShell";
+import { StackLine } from "./Readout";
+import { PROFILE, SKILLS } from "@/lib/content";
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4 border-b border-white/10 py-1.5 last:border-b-0">
+      <span className="shrink-0 text-trace">{label}</span>
+      <span className="text-right text-fg/90">{value}</span>
+    </div>
+  );
+}
 
 export function AboutSection() {
   const [imgError, setImgError] = useState(false);
 
   return (
     <SectionShell
-      title="OBSERVER: HARMEET SINGH"
+      title={`Observer: ${PROFILE.name}`}
       subtitle="Wavefunction profile"
       subLabel="|ψ⟩"
     >
-      <div className="grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.2fr)] gap-8 h-full">
-        <div className="flex flex-col gap-4">
-          <div className="relative aspect-[1/1] border border-white/40 overflow-hidden bg-white/5">
+      <div className="grid gap-7 md:grid-cols-[minmax(0,300px)_minmax(0,1fr)] lg:gap-10">
+        <div className="space-y-4">
+          <div className="relative aspect-square overflow-hidden border border-white/30 bg-white/[0.03]">
             {!imgError ? (
               <Image
                 src="/profile-bw.jpg"
-                alt="Harmeet Singh portrait"
+                alt={PROFILE.name}
                 fill
-                className="object-cover grayscale contrast-125"
-                sizes="(max-width: 768px) 100vw, 40vw"
                 unoptimized
+                sizes="(max-width: 768px) 100vw, 320px"
+                className="object-cover grayscale contrast-125"
                 onError={() => setImgError(true)}
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-fgMuted text-xs tracking-widest uppercase">
-                Add profile-bw.jpg to public/
+              /* No portrait on disk yet — show the particle card rather than a build note. */
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                <span className="font-sans text-4xl tracking-[0.2em] text-white/25">
+                  {PROFILE.particleId}
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-trace">
+                  Unobserved
+                </span>
               </div>
             )}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/60 to-transparent p-3 text-[11px] tracking-[0.18em] uppercase">
-              <div>PARTICLE ID:</div>
-              <div className="text-fgMuted mt-1">
-                HS-13
-              </div>
-              <div className="mt-2">PRIMARY DOMAINS:</div>
-              <div className="text-fgMuted mt-1 leading-tight">
-                Machine Learning · Data Systems · Software Engineering
-              </div>
-            </div>
-          </div>
-          <div className="border border-white/30 text-[11px] p-3 space-y-1 uppercase tracking-[0.05em]">
-            <div className="flex justify-between">
-              <span className="text-fgMuted font-bold">STATE</span>
-              <span>ACTIVE</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-fgMuted font-bold">ENVIRONMENT</span>
-              <span>UC IRVINE</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-fgMuted font-bold">DEGREE</span>
-              <span>B.S. CS (Honors)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-fgMuted font-bold">GPA</span>
-              <span>3.78</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-fgMuted font-bold">OBSERVATION</span>
-              <span>ONGOING</span>
-            </div>
-          </div>
-        </div>
-        <div className="border border-white/30 p-4 md:p-6 text-sm leading-relaxed space-y-6">
-          <div className="space-y-3">
-            <p className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
-              <span className="text-white font-semibold">
-                [PARTICLE PROFILE]
-              </span>
-            </p>
-            <p className="text-fgMuted text-xs md:text-[13px]">
-              Particle HS-13 is a curiosity-driven engineering particle primarily observed building computational systems that transform complex data into useful signals. Its work frequently involves machine learning, data-driven applications, and full-stack software systems where algorithms, infrastructure, and interfaces interact as a unified system.
-            </p>
-            <p className="text-fgMuted text-xs md:text-[13px]">
-              Outside the lab, the particle exhibits exploratory behavior through reading science fiction, diving into technical rabbit holes, experimenting with hardware, and building side projects that combine software with real-world systems. These seemingly unrelated interests often influence how problems are approached, leading to creative technical solutions.
-            </p>
           </div>
 
-          <div className="space-y-3">
-            <div className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
-              <span className="text-white font-semibold">[OBSERVED TRAJECTORY]</span>
-            </div>
-            <p className="text-fgMuted text-xs md:text-[13px]">
-              Originating from Stockton, California, HS-13 followed a trajectory shaped by persistence, curiosity, and a drive to build things that didn't previously exist. Transitioning from a small Central Valley environment to UC Irvine required adapting to new academic and technical challenges while navigating unfamiliar systems and opportunities.
-            </p>
-            <p className="text-fgMuted text-xs md:text-[13px]">
-              Rather than treating these challenges as barriers, the particle used them as catalysts for experimentation — pursuing difficult projects, exploring machine learning and systems engineering, and continuously expanding its technical scope.
-            </p>
-            <p className="text-fgMuted text-xs md:text-[13px] italic">
-              Current trajectory suggests continued movement toward building intelligent systems that connect data, algorithms, and real-world applications.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <div className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
-              <span className="text-white font-semibold">[EDUCATION]</span>
-            </div>
-            <div className="text-[11px] space-y-2">
-              <div className="flex justify-between items-start">
-                <span className="font-semibold uppercase tracking-wider">University of California, Irvine</span>
-                <span className="text-fgMuted">Jun 2027</span>
-              </div>
-              <div className="text-fgMuted">B.S. Computer Science with Honors &mdash; GPA: 3.78</div>
-              <div className="text-fgMuted leading-relaxed">
-                <span className="text-white/70">Concentrations:</span> Machine Learning · Data Science · AI · Software Engineering
-              </div>
-              <div className="text-fgMuted leading-relaxed">
-                <span className="text-white/70">Coursework:</span> Python Series, C/C++, Statistics for CS, Software Engineering, Digital Design, Computer Networks, Data Structures &amp; Algorithms
-              </div>
-            </div>
+          <div className="border border-white/25 px-3 py-2 text-[11px]">
+            <Row label="Particle" value={PROFILE.particleId} />
+            <Row label="State" value="Active" />
+            <Row label="Environment" value="UC Irvine" />
+            <Row label="Degree" value="B.S. CS (Honors)" />
+            <Row label="GPA" value={PROFILE.gpa} />
+            <Row label="Graduates" value={PROFILE.graduation} />
           </div>
 
           <div className="text-[11px]">
-            <div className="space-y-2">
-              <div className="uppercase tracking-[0.18em] text-[11px] text-fgMuted border-b border-white/10 pb-1">
-                <span className="text-white font semibold">
-                  [ACTIVE EXPERIMENTS]
+            <p className="text-trace">Primary domains</p>
+            <p className="mt-1 leading-relaxed text-fgMuted">
+              {PROFILE.domains.join("  ·  ")}
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-7">
+          <section className="space-y-3">
+            <h3 className="border-b border-white/10 pb-1 text-[11px] uppercase tracking-[0.18em] text-trace">
+              Particle profile
+            </h3>
+            <p className="max-w-[70ch] text-[12.5px] leading-relaxed text-fgMuted">
+              Particle {PROFILE.particleId} is a curiosity-driven engineering
+              particle, primarily observed building computational systems that
+              turn complex data into useful signals. Its work runs through
+              machine learning, robotics perception, and full-stack systems
+              where algorithms, infrastructure, and interfaces have to behave as
+              one thing.
+            </p>
+            <p className="max-w-[70ch] text-[12.5px] leading-relaxed text-fgMuted">
+              Outside the lab it reads science fiction, falls into technical
+              rabbit holes, and builds side projects that put software against
+              real hardware. Those detours tend to show up later as the reason a
+              problem got solved a particular way.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="border-b border-white/10 pb-1 text-[11px] uppercase tracking-[0.18em] text-trace">
+              Observed trajectory
+            </h3>
+            <p className="max-w-[70ch] text-[12.5px] leading-relaxed text-fgMuted">
+              Originating from Stockton, California, {PROFILE.particleId}{" "}
+              followed a path shaped by persistence and a drive to build things
+              that did not previously exist. Moving from a small Central Valley
+              environment to UC Irvine meant adapting to unfamiliar academic and
+              technical systems at speed.
+            </p>
+            <p className="max-w-[70ch] text-[12.5px] leading-relaxed text-fgMuted">
+              It treated that as a reason to experiment rather than a barrier —
+              taking on harder projects, moving deeper into machine learning and
+              systems engineering, and widening its technical range each term.
+            </p>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="border-b border-white/10 pb-1 text-[11px] uppercase tracking-[0.18em] text-trace">
+              Education
+            </h3>
+            <div className="max-w-[70ch] space-y-2 text-[11.5px]">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <span className="font-sans text-[13px]">{PROFILE.school}</span>
+                <span className="font-mono text-[10px] text-trace">
+                  {PROFILE.graduation}
                 </span>
               </div>
-              <ul className="space-y-1 text-fgMuted list-disc list-inside">
-                <li>Machine learning systems & applied modeling</li>
-                <li>Data-driven full-stack applications</li>
-                <li>Computer vision & intelligent tools</li>
-                <li>Software translating data into insights</li>
-              </ul>
+              <p className="text-fgMuted">
+                {PROFILE.degree} — GPA {PROFILE.gpa}
+              </p>
+              <p className="leading-relaxed text-trace">
+                Coursework: {PROFILE.coursework.join(", ")}
+              </p>
             </div>
-          </div>
-          <div className="border-t border-dashed border-white/25 pt-4 text-[11px]">
-            <span className="text-fgMuted mr-2">NOTE:</span>
-            HS-13 remains in a continuous learning state, frequently initiating new projects to explore emerging technologies and deepen its understanding of computational systems.
-          </div>
+          </section>
+
+          <section className="space-y-3">
+            <h3 className="border-b border-white/10 pb-1 text-[11px] uppercase tracking-[0.18em] text-trace">
+              Instrumentation
+            </h3>
+            <dl className="space-y-3">
+              {SKILLS.map((group) => (
+                <div
+                  key={group.group}
+                  className="grid gap-1 md:grid-cols-[170px_minmax(0,1fr)] md:gap-5"
+                >
+                  <dt className="text-[11px] text-fg/80">{group.group}</dt>
+                  <dd>
+                    <StackLine items={group.items} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
         </div>
       </div>
     </SectionShell>

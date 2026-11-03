@@ -3,12 +3,28 @@ import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import "./globals.css";
 
+const DESCRIPTION =
+  "Harmeet Singh — CS student at UC Irvine working in machine learning, computer vision, and robotics. Portfolio built as an interactive quantum entanglement simulator.";
+
 export const metadata: Metadata = {
-  title: "Harmeet Singh — Quantum Entanglement Simulator",
-  description: "Interactive portfolio as a quantum entanglement simulator. Navigate entangled nodes.",
+  metadataBase: new URL("https://harmeet-singh.dev"),
+  title: "Harmeet Singh — ML, Computer Vision & Robotics",
+  description: DESCRIPTION,
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Harmeet Singh — ML, Computer Vision & Robotics",
+    description: DESCRIPTION,
+    url: "https://harmeet-singh.dev",
+    siteName: "harmeet-singh.dev",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Harmeet Singh — ML, Computer Vision & Robotics",
+    description: DESCRIPTION,
   },
 };
 

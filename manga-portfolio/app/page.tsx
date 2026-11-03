@@ -32,8 +32,8 @@ export default function Page() {
       <HudOverlay />
 
       {!isPanelOpen && (
-        <div className="pointer-events-none fixed bottom-3 left-1/2 -translate-x-1/2 text-[10px] text-fgMuted tracking-[0.2em] uppercase z-10">
-          [ QUANTUM ENTANGLEMENT SIMULATOR ]
+        <div className="pointer-events-none fixed bottom-3 left-1/2 -translate-x-1/2 z-10 text-[10px] uppercase tracking-[0.2em] text-trace">
+          Quantum entanglement simulator
         </div>
       )}
     </main>

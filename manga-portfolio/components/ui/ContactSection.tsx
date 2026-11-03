@@ -1,17 +1,31 @@
 "use client";
 
-import { SectionShell } from "./SectionShell";
 import { useState, useRef, useEffect } from "react";
+import { SectionShell } from "./SectionShell";
+import { PROFILE } from "@/lib/content";
 
-type SubmitState = "idle" | "encoding" | "transmitting" | "delivered" | "error";
+type SubmitState =
+  | "idle"
+  | "encoding"
+  | "transmitting"
+  | "delivered"
+  | "queued"
+  | "error";
 
-const STATE_LABELS: Record<SubmitState, string> = {
-  idle: "[ TRANSMIT SIGNAL ]",
-  encoding: "ENCODING...",
-  transmitting: "CHANNEL ESTABLISHED...",
-  delivered: "[ WAVEFORM DELIVERED ]",
-  error: "[ TRANSMISSION FAILED ]",
+const BUTTON_LABELS: Record<SubmitState, string> = {
+  idle: "Transmit signal",
+  encoding: "Encoding…",
+  transmitting: "Channel established…",
+  delivered: "Waveform delivered",
+  queued: "Waveform delivered",
+  error: "Transmission failed",
 };
+
+const CHANNELS = [
+  { label: "Email", value: PROFILE.email, href: `mailto:${PROFILE.email}` },
+  { label: "GitHub", value: PROFILE.githubLabel, href: PROFILE.github },
+  { label: "LinkedIn", value: PROFILE.linkedinLabel, href: PROFILE.linkedin },
+];
 
 export function ContactSection() {
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
@@ -26,155 +40,186 @@ export function ContactSection() {
     e.preventDefault();
     setErrorMsg(null);
 
-    const form = e.currentTarget;
-    const data = new FormData(form);
+    const data = new FormData(e.currentTarget);
+    const payload = {
+      name: (data.get("name") as string)?.trim(),
+      email: (data.get("email") as string)?.trim(),
+      message: (data.get("message") as string)?.trim(),
+      company: (data.get("company") as string) ?? "",
+      elapsed: Date.now() - formLoadedAt.current,
+    };
 
-    const name = (data.get("name") as string)?.trim();
-    const email = (data.get("email") as string)?.trim();
-    const message = (data.get("message") as string)?.trim();
-    const company = (data.get("company") as string) ?? ""; // honeypot
-    const elapsed = Date.now() - formLoadedAt.current;
-
-    // Animate: encoding phase
     setSubmitState("encoding");
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 700));
     setSubmitState("transmitting");
 
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message, company, elapsed }),
+        body: JSON.stringify(payload),
       });
-
       const json = await res.json();
 
       if (!res.ok) {
         setErrorMsg(json.error ?? "Unknown error");
         setSubmitState("error");
-        setTimeout(() => setSubmitState("idle"), 3500);
         return;
       }
-
-      setSubmitState("delivered");
+      setSubmitState(json.delivered ? "delivered" : "queued");
     } catch {
-      setErrorMsg("Connection anomaly detected — try again.");
+      setErrorMsg("Connection anomaly — the signal did not leave the browser.");
       setSubmitState("error");
-      setTimeout(() => setSubmitState("idle"), 3500);
     }
   };
 
-  const isSubmitting = submitState === "encoding" || submitState === "transmitting";
-  const isDelivered = submitState === "delivered";
+  const isSubmitting =
+    submitState === "encoding" || submitState === "transmitting";
+  const isDone = submitState === "delivered" || submitState === "queued";
 
   return (
-    <SectionShell
-      title="ENTANGLE"
-      subtitle="Collapse to channel"
-      subLabel="↔"
-    >
-      <div className="grid md:grid-cols-[1.2fr_minmax(0,1fr)] gap-8 text-xs md:text-sm">
-        <div className="border border-white/40 bg-black/60 p-4 font-mono">
-          <div className="text-fgMuted mb-2">
+    <SectionShell title="Entangle" subtitle="Collapse to channel" subLabel="↔">
+      <div className="mx-auto grid min-h-full max-w-[92ch] content-center gap-7 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="border border-white/30 bg-black/60 p-4">
+          <p className="mb-3 text-[11px] text-trace">
             &gt; open_channel(observer=&quot;harmeet&quot;)
-          </div>
+          </p>
 
-          {isDelivered ? (
-            <div className="space-y-2 text-[11px] tracking-[0.15em]">
-              <div className="text-white uppercase">[ WAVEFORM DELIVERED ]</div>
-              <div className="text-fgMuted">Signal collapsed to destination.</div>
-              <div className="text-fgMuted">Expect a coherent reply.</div>
+          {isDone ? (
+            <div className="space-y-3 text-[12px]" role="status">
+              <p className="font-sans text-sm">Waveform delivered</p>
+              {submitState === "delivered" ? (
+                <p className="leading-relaxed text-fgMuted">
+                  The signal collapsed to its destination. Expect a coherent
+                  reply.
+                </p>
+              ) : (
+                /* Accepted but no mail relay configured — say so rather than imply a reply is coming. */
+                <p className="leading-relaxed text-fgMuted">
+                  The message reached the server, but no mail relay is wired up
+                  yet, so it will not land in an inbox. For anything
+                  time-sensitive, email{" "}
+                  <a
+                    className="text-fg underline underline-offset-2"
+                    href={`mailto:${PROFILE.email}`}
+                  >
+                    {PROFILE.email}
+                  </a>{" "}
+                  directly.
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={() => setSubmitState("idle")}
+                className="border border-white/40 px-3 py-1 text-[10px] uppercase tracking-[0.16em] hover:bg-white hover:text-black"
+              >
+                Send another
+              </button>
             </div>
           ) : (
             <form className="space-y-3" onSubmit={handleSubmit}>
-              {/* Honeypot field — hidden from real users, bots fill it */}
               <input
                 type="text"
                 name="company"
                 tabIndex={-1}
                 autoComplete="off"
                 aria-hidden="true"
-                style={{ position: "absolute", left: "-9999px", opacity: 0, pointerEvents: "none" }}
+                style={{
+                  position: "absolute",
+                  left: "-9999px",
+                  opacity: 0,
+                  pointerEvents: "none",
+                }}
               />
 
               <label className="block">
-                <span className="text-fgMuted">/name</span>
+                <span className="text-[11px] text-trace">/name</span>
                 <input
                   required
                   name="name"
+                  autoComplete="name"
                   disabled={isSubmitting}
-                  className="mt-1 w-full bg-black border border-white/30 px-2 py-1 text-xs focus:outline-none focus:border-white disabled:opacity-40"
+                  className="mt-1 w-full border border-white/30 bg-black px-2 py-1.5 text-xs focus:border-white focus:outline-none disabled:opacity-40"
                 />
               </label>
               <label className="block">
-                <span className="text-fgMuted">/email</span>
+                <span className="text-[11px] text-trace">/email</span>
                 <input
                   required
                   type="email"
                   name="email"
+                  autoComplete="email"
                   disabled={isSubmitting}
-                  className="mt-1 w-full bg-black border border-white/30 px-2 py-1 text-xs focus:outline-none focus:border-white disabled:opacity-40"
+                  className="mt-1 w-full border border-white/30 bg-black px-2 py-1.5 text-xs focus:border-white focus:outline-none disabled:opacity-40"
                 />
               </label>
               <label className="block">
-                <span className="text-fgMuted">/message</span>
+                <span className="text-[11px] text-trace">/message</span>
                 <textarea
                   required
-                  rows={4}
+                  rows={5}
                   name="message"
+                  maxLength={5000}
                   disabled={isSubmitting}
-                  className="mt-1 w-full bg-black border border-white/30 px-2 py-1 text-xs resize-none focus:outline-none focus:border-white disabled:opacity-40"
+                  className="mt-1 w-full resize-none border border-white/30 bg-black px-2 py-1.5 text-xs focus:border-white focus:outline-none disabled:opacity-40"
                 />
               </label>
 
               {errorMsg && (
-                <div className="text-[10px] text-red-400 tracking-[0.1em] uppercase border border-red-400/30 px-2 py-1">
-                  ⚠ {errorMsg}
-                </div>
+                <p
+                  role="alert"
+                  className="border border-red-400/40 px-2 py-1 text-[11px] text-red-400"
+                >
+                  {errorMsg}
+                </p>
               )}
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`mt-3 border px-4 py-1 uppercase tracking-[0.18em] text-[10px] transition-all duration-300 ${submitState === "error"
+                className={`mt-2 border px-4 py-1.5 text-[10px] uppercase tracking-[0.18em] transition-colors ${
+                  submitState === "error"
                     ? "border-red-400 text-red-400"
                     : isSubmitting
-                      ? "border-white/40 text-white/40 cursor-not-allowed animate-pulse"
+                      ? "cursor-not-allowed border-white/40 text-white/40"
                       : "border-white hover:bg-white hover:text-black"
-                  }`}
+                }`}
               >
-                {STATE_LABELS[submitState]}
+                {BUTTON_LABELS[submitState]}
               </button>
             </form>
           )}
         </div>
 
-        <div className="space-y-3 text-[11px]">
-          <div className="uppercase tracking-[0.2em] text-fgMuted">
-            CHANNELS
-          </div>
-          <div className="space-y-1">
-            <div>
-              <span className="text-fgMuted mr-2">Email</span>
-              <a href="mailto:harmeets130922@gmail.com" className="hover:text-white transition-colors">harmeets130922@gmail.com</a>
+        <div className="space-y-4 text-[11.5px]">
+          <h3 className="border-b border-white/10 pb-1 text-[11px] uppercase tracking-[0.18em] text-trace">
+            Channels
+          </h3>
+          <dl className="space-y-2">
+            {CHANNELS.map((c) => (
+              <div key={c.label} className="flex gap-3">
+                <dt className="w-16 shrink-0 text-trace">{c.label}</dt>
+                <dd className="min-w-0">
+                  <a
+                    href={c.href}
+                    target={c.href.startsWith("http") ? "_blank" : undefined}
+                    rel="noopener noreferrer"
+                    className="break-all text-fgMuted underline-offset-2 transition-colors hover:text-fg hover:underline"
+                  >
+                    {c.value}
+                  </a>
+                </dd>
+              </div>
+            ))}
+            <div className="flex gap-3">
+              <dt className="w-16 shrink-0 text-trace">Location</dt>
+              <dd>{PROFILE.location}</dd>
             </div>
-            <div>
-              <span className="text-fgMuted mr-2">GitHub</span>
-              <a href="https://github.com/har-m33t" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">github.com/har-m33t</a>
-            </div>
-            <div>
-              <span className="text-fgMuted mr-2">LinkedIn</span>
-              <a href="https://linkedin.com/in/harmeet-singh-uppal" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">linkedin.com/in/harmeet-singh-uppal</a>
-            </div>
-            <div>
-              <span className="text-fgMuted mr-2">Location</span>
-              <span>Irvine, CA · PST</span>
-            </div>
-          </div>
-          <div className="border-t border-dashed border-white/25 pt-3 text-fgMuted">
-            Messages collapse to a single outcome—replies are coherent and
+          </dl>
+          <p className="border-t border-dashed border-white/20 pt-3 leading-relaxed text-trace">
+            Messages collapse to a single outcome. Replies are coherent and
             human.
-          </div>
+          </p>
         </div>
       </div>
     </SectionShell>

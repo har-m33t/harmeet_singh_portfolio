@@ -1,95 +1,188 @@
 "use client";
 
-import { SectionShell } from "./SectionShell";
+import { useRef, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
-
-const projects = [
-  {
-    title: "ParcelIQ",
-    tag: "ML · CV · FULL-STACK",
-    date: "MAR 2026",
-    stack: "React · Vite · Tailwind · Mapbox GL JS · Flask · Python · OpenCV · Groq API · Scikit-learn",
-    bullets: [
-      "Built a hybrid ML risk engine blending deterministic modeling with a stacked ensemble (Gradient Boosting, MLP, Logistic Regression) to generate explainable property risk scores across 9 spatial features.",
-      "Developed a CV segmentation pipeline with test-time augmentation and ensemble voting, extracting parcel building footprints with up to 92% confidence.",
-      "Shipped a full-stack 3D Mapbox dashboard with toggleable layers, financial analytics, AI chat assistant, and automated PDF reporting.",
-    ],
-    id: "EXP-01",
-  },
-  {
-    title: "F1 Pit Stop Prediction",
-    tag: "RL · ML · DATA VIZ",
-    date: "JAN 2026",
-    stack: "Python · Pandas · Seaborn · Matplotlib · Gymnasium · Stable-Baselines3",
-    bullets: [
-      "Developed a reinforcement learning model (DQN) to determine optimal, track-specific F1 pit stop strategies, leveraging a predictive ML model to simulate race dynamics.",
-      "Implemented comprehensive data preprocessing and feature engineering—extracting lap-time degradation trends, tire-wear rates, track temperature fluctuations, and safety car event indicators.",
-      "Built 2D and 3D interactive visualizations in matplotlib to compare predicted vs. actual pit-stop strategies for 20 racers, facilitating rapid strategic insights.",
-    ],
-    id: "EXP-02",
-  },
-  {
-    title: "Quantum Particle Simulator",
-    tag: "3D · CREATIVE · FULL-STACK",
-    date: "MAR 2026",
-    stack: "Next.js · React Three Fiber · Framer Motion · Three.js · TypeScript · Tailwind",
-    bullets: [
-      "Architected an interactive quantum-themed portfolio rendered in WebGL with a navigable 3D node graph, particle system, and procedural electric-line materials.",
-      "Built custom GLSL shader materials and a three.js post-processing pipeline for the sci-fi aesthetic, including scanlines, bloom, and CRT noise effects.",
-      "Designed a reactive state-driven section navigation system using Zustand and Framer Motion for seamless panel transitions.",
-    ],
-    id: "EXP-03",
-  },
-];
+import { SectionShell } from "./SectionShell";
+import { MetricStrip, Readout, Sealed, StackLine, Target } from "./Readout";
+import { SORTED_PROJECTS } from "@/lib/content";
 
 export function ProjectsSection() {
+  const [selectedId, setSelectedId] = useState(SORTED_PROJECTS[0].id);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const selected =
+    SORTED_PROJECTS.find((p) => p.id === selectedId) ?? SORTED_PROJECTS[0];
+
+  const select = (id: string) => {
+    setSelectedId(id);
+    detailRef.current?.scrollTo({ top: 0 });
+  };
+
+  const step = (delta: number) => {
+    const i = SORTED_PROJECTS.findIndex((p) => p.id === selectedId);
+    const next = SORTED_PROJECTS[(i + delta + SORTED_PROJECTS.length) % SORTED_PROJECTS.length];
+    select(next.id);
+  };
+
   return (
     <SectionShell
-      title="EXPERIMENT LOG"
-      subtitle="Entangled systems"
+      title="Experiment log"
+      subtitle={`${SORTED_PROJECTS.length} entries`}
       subLabel="Σ"
+      bleed
     >
-      <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-        {projects.map((p, i) => (
+      <div className="grid h-full grid-rows-[auto_minmax(0,1fr)] md:grid-cols-[minmax(190px,260px)_minmax(0,1fr)] md:grid-rows-1">
+        {/* Index rail */}
+        <nav
+          aria-label="Experiments"
+          className="rail-scroll max-h-44 overflow-y-auto border-b border-white/20 md:max-h-none md:border-b-0 md:border-r"
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              step(1);
+            }
+            if (e.key === "ArrowUp") {
+              e.preventDefault();
+              step(-1);
+            }
+          }}
+        >
+          {SORTED_PROJECTS.map((p) => {
+            const active = p.id === selectedId;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                aria-current={active}
+                onClick={() => select(p.id)}
+                className={`block w-full border-b border-l-2 border-b-white/10 px-4 py-2.5 text-left transition-colors ${
+                  active
+                    ? "border-l-white bg-white/[0.07]"
+                    : "border-l-transparent hover:bg-white/5"
+                }`}
+              >
+                <div className="flex items-baseline justify-between gap-2">
+                  <span
+                    className={`truncate font-sans text-[12px] tracking-wide ${
+                      active ? "text-fg" : "text-fgMuted"
+                    }`}
+                  >
+                    {p.codename}
+                  </span>
+                  <span className="shrink-0 font-mono text-[9px] text-trace">
+                    {p.date}
+                  </span>
+                </div>
+                {p.headline && (
+                  <div className="mt-0.5 truncate text-[10px] text-trace">
+                    {p.headline}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Detail */}
+        <div ref={detailRef} className="rail-scroll min-h-0 overflow-y-auto">
           <motion.article
-            key={p.title}
-            className="sim-panel relative overflow-hidden flex flex-col justify-between border border-white/40 cursor-pointer"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{
-              delay: 0.05 * i,
-              duration: 0.55,
-              ease: [0.19, 1, 0.22, 1],
-            }}
-            whileHover={{
-              translateY: -4,
-              boxShadow: "0 0 40px rgba(255,255,255,0.18)",
-              scale: 1.01,
-            }}
+            key={selected.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.25 }}
+            className="px-5 py-5 md:px-8 md:py-7"
           >
-            <div className="p-4 flex-1 flex flex-col gap-3">
-              <div className="flex justify-between text-[11px] tracking-[0.2em] uppercase">
-                <span className="text-fgMuted">{p.tag}</span>
-                <span>{p.id}</span>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-trace">
+              {selected.tags.join("  ·  ")}
+            </p>
+            <h3 className="mt-2 font-sans text-xl leading-tight md:text-[28px]">
+              {selected.title}
+            </h3>
+            <p className="mt-1.5 font-mono text-[11px] text-trace">
+              {selected.codename} · {selected.date}
+            </p>
+
+            <div className="mt-5 grid gap-7 lg:grid-cols-[minmax(0,68ch)_minmax(170px,230px)]">
+              <div className="space-y-4">
+                {/* Results lead, because the result is the claim. */}
+                {selected.metrics && <MetricStrip metrics={selected.metrics} />}
+
+                <div className="space-y-3">
+                  {selected.bullets.map((b, i) => (
+                    <p
+                      key={i}
+                      className="text-[12px] leading-relaxed text-fgMuted before:mr-2 before:text-trace before:content-['—'] md:text-[13px]"
+                    >
+                      <Readout>{b}</Readout>
+                    </p>
+                  ))}
+                </div>
               </div>
-              <div className="font-sans text-sm uppercase leading-tight">
-                {p.title}
-              </div>
-              <div className="text-[10px] text-white/40 italic leading-snug">
-                {p.stack}
-              </div>
-              <ul className="space-y-1.5 text-[11px] text-fgMuted list-disc list-inside leading-relaxed">
-                {p.bullets.map((b, j) => (
-                  <li key={j}>{b}</li>
-                ))}
-              </ul>
+
+              {/* Metadata rail — keeps the prose column at a readable measure
+                  instead of letting it stretch across a wide panel. */}
+              <aside className="space-y-4 lg:border-l lg:border-white/10 lg:pl-5">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-trace">
+                    Source
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {selected.repo ? (
+                      <Target href={selected.repo}>
+                        {selected.repo.replace("https://github.com/", "")}
+                      </Target>
+                    ) : (
+                      <Sealed />
+                    )}
+                    {selected.live && (
+                      <Target href={selected.live}>Live site</Target>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-trace">
+                    Built with
+                  </p>
+                  <div className="mt-2">
+                    <StackLine items={selected.stack} />
+                  </div>
+                </div>
+              </aside>
             </div>
-            <div className="border-t border-dashed border-white/25 text-[11px] px-4 py-2 flex justify-between items-center">
-              <span className="text-fgMuted">{p.date}</span>
-              <span className="text-[10px] text-fg/80">[ OBSERVE ]</span>
-            </div>
+
+            {selected.images && selected.images.length > 0 && (
+              <div className="mt-7 border-t border-white/15 pt-5">
+                <p className="text-[10px] uppercase tracking-[0.22em] text-trace">
+                  Results from the repository
+                </p>
+                <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                  {selected.images.map((img) => (
+                    <figure key={img.src} className="border border-white/20">
+                      <div className="relative aspect-[4/3] bg-black">
+                        <Image
+                          src={img.src}
+                          alt={img.caption}
+                          fill
+                          unoptimized
+                          sizes="(max-width: 768px) 100vw, 40vw"
+                          className={
+                            img.screenshot
+                              ? "object-contain"
+                              : "plot-crt object-contain"
+                          }
+                        />
+                      </div>
+                      <figcaption className="border-t border-white/15 px-3 py-2 text-[10px] leading-relaxed text-trace">
+                        {img.caption}
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.article>
-        ))}
+        </div>
       </div>
     </SectionShell>
   );

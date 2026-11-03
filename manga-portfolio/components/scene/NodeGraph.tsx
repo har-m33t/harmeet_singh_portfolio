@@ -8,6 +8,7 @@ import { useNodeNavigation } from "@/lib/useNodeNavigation";
 import { NodeShaderMaterial } from "./NodeMaterial";
 import { useElectricLineMaterial } from "./ElectricLineMaterial";
 import { Html } from "@react-three/drei";
+import { dragState } from "@/lib/dragState";
 
 const SPHERE_RADIUS = 0.45;
 /** Line ends this far inside the sphere so they read as "plugged in" from any angle */
@@ -75,6 +76,7 @@ function Node({ id, position, label }: NodeProps) {
   });
 
   const isDimmed = activeNode && activeNode !== id;
+  const panelOpen = activeNode !== null && activeNode !== "you";
 
   return (
     <group position={position}>
@@ -83,6 +85,8 @@ function Node({ id, position, label }: NodeProps) {
         material={material}
         onClick={(e) => {
           e.stopPropagation();
+          // A drag that happens to end on a node is a camera move, not a pick.
+          if (dragState.wasDrag) return;
           setTargetNode(id);
           setActiveNode(id);
         }}
@@ -98,13 +102,18 @@ function Node({ id, position, label }: NodeProps) {
       <Html
         center
         distanceFactor={6}
+        // drei defaults to a z-index near 16.7M, which painted these labels
+        // over every open panel. Keep them above the canvas but below the UI.
+        zIndexRange={[10, 0]}
         style={{
           pointerEvents: "none",
           textTransform: "uppercase",
           fontSize: "10px",
           letterSpacing: "0.2em",
           color: "#ffffff",
-          opacity: isDimmed ? 0.4 : 0.9,
+          opacity: panelOpen ? 0 : isDimmed ? 0.4 : 0.9,
+          visibility: panelOpen ? "hidden" : "visible",
+          transition: "opacity 0.3s ease-out",
           mixBlendMode: "screen",
         }}
       >
