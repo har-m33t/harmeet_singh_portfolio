@@ -24,13 +24,28 @@ export function ProjectsSection() {
   const isLab = useIsLabViewport();
 
   const slug = pathname.split("/")[2];
-  const selected = projectBySlug(slug ?? "") ?? SORTED_PROJECTS[0];
+  const fromSlug = projectBySlug(slug ?? "");
+
+  /*
+   * Closing the panel routes to "/", but AnimatePresence keeps this component
+   * mounted for the 450ms exit — so for those frames the pathname no longer
+   * names a project. Hold the last real one rather than falling back to the
+   * newest, or the content visibly swaps while the panel fades out.
+   */
+  const lastSeen = useRef<Project>(fromSlug ?? SORTED_PROJECTS[0]);
+  if (fromSlug) lastSeen.current = fromSlug;
+  const selected = fromSlug ?? lastSeen.current;
 
   // A bare /projects is a folder, not a destination — settle it on the newest
-  // entry so the URL always names what is actually on screen.
+  // entry so the URL always names what is actually on screen. This must test
+  // the full path, not just an absent slug: during the exit above the path is
+  // "/", and treating that as "bare /projects" redirected the panel back open,
+  // making Close and Escape do nothing.
   useEffect(() => {
-    if (!slug) router.replace(`/projects/${SORTED_PROJECTS[0].slug}`);
-  }, [slug, router]);
+    if (pathname.replace(/\/$/, "") === "/projects") {
+      router.replace(`/projects/${SORTED_PROJECTS[0].slug}`);
+    }
+  }, [pathname, router]);
 
   const [open, setOpen] = useState<Record<CategoryId, boolean>>(() =>
     Object.fromEntries(PROJECT_TREE.map((c) => [c.id, true])) as Record<
