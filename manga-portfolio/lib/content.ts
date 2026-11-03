@@ -165,12 +165,12 @@ export const EXPERIENCES: Experience[] = [
     org: "Underwater Robotics Project (RoboSub), UC Irvine",
     role: "Computer Vision / Perception Engineer",
     location: "Irvine, CA",
-    period: "Feb 2026 — Present",
+    period: "Feb 2026 — Jun 2026",
     start: 202602,
     stack: ["Python", "OpenCV", "ROS2", "YOLOv11", "CLAHE", "NumPy"],
     bullets: [
       "Built Python/OpenCV pipelines for real-time underwater detection of gates and buoys, including an HSV-based color detection algorithm, publishing detections to ROS2 topics for downstream autonomy and navigation.",
-      "Developing a YOLOv11 detection pipeline with underwater-specific preprocessing — CLAHE and color attenuation correction — to improve robustness in low-visibility conditions.",
+      "Developed a YOLOv11 detection pipeline with underwater-specific preprocessing — CLAHE and color attenuation correction — to improve robustness in low-visibility conditions.",
       "Built and tested ROS2 Python nodes with state-machine logic that convert perception outputs into motion commands, enabling closed-loop AUV control in simulation and on hardware.",
       "Defined perception API contracts with the autonomy, mechanical, and electrical teams to integrate CV outputs into the AUV control system before hardware deployment.",
     ],
@@ -180,7 +180,7 @@ export const EXPERIENCES: Experience[] = [
     org: "UC Irvine — School of Physical Sciences",
     role: "Digital Media Assistant",
     location: "Irvine, CA",
-    period: "Apr 2025 — Present",
+    period: "Apr 2025 — Apr 2026",
     start: 202504,
     metrics: [
       { label: "Audience interaction", value: "60%", dir: "up" },
