@@ -12,14 +12,25 @@ const ZOOM_MAX = 40;
 const ZOOM_DEFAULT = 14;
 const DRAG_SPEED = 0.005;
 const ELEVATION_LIMIT = Math.PI / 2.6;
+/**
+ * Pointer-follow drift, cut ~70% from its original 0.7/0.4. The scene still
+ * breathes, but a node no longer slides out from under the cursor on approach.
+ */
+const SWAY_X = 0.21;
+const SWAY_Y = 0.12;
+/** How fast sway eases toward its target. Hovering a node freezes it outright. */
+const SWAY_EASE = 0.08;
 
 export function CameraRig() {
   const { camera } = useThree();
-  const { targetNode } = useNodeNavigation();
+  const { targetNode, hoveredNode } = useNodeNavigation();
   const zoomDistance = useRef(ZOOM_DEFAULT);
   const currentZoom = useRef(ZOOM_DEFAULT);
   const targetPos = useRef(new THREE.Vector3(0, 0, ZOOM_DEFAULT));
   const sway = useRef({ x: 0, y: 0 });
+  /** Where sway is heading. Held still while a node is hovered. */
+  const swayTarget = useRef({ x: 0, y: 0 });
+  const frozen = useRef(false);
   /** Drag-applied rotation of the camera about the graph, in radians. */
   const orbit = useRef({ azimuth: 0, elevation: 0 });
   const drag = useRef<{ active: boolean; x: number; y: number }>({
@@ -32,8 +43,8 @@ export function CameraRig() {
     const handleMove = (e: PointerEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;
       const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      sway.current.x = x;
-      sway.current.y = y;
+      swayTarget.current.x = x;
+      swayTarget.current.y = y;
       document.documentElement.style.setProperty(
         "--cursor-x",
         `${e.clientX}px`
@@ -77,6 +88,10 @@ export function CameraRig() {
       window.removeEventListener("pointercancel", handleUp);
     };
   }, []);
+
+  useEffect(() => {
+    frozen.current = hoveredNode !== null;
+  }, [hoveredNode]);
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
@@ -123,9 +138,24 @@ export function CameraRig() {
 
     targetPos.current.lerp(dir.multiplyScalar(currentZoom.current), 0.06);
 
+    // Freeze the drift the moment a node is hovered, so the thing you are
+    // aiming at stops moving. Released, it eases back rather than snapping.
+    if (!frozen.current) {
+      sway.current.x = THREE.MathUtils.lerp(
+        sway.current.x,
+        swayTarget.current.x,
+        SWAY_EASE
+      );
+      sway.current.y = THREE.MathUtils.lerp(
+        sway.current.y,
+        swayTarget.current.y,
+        SWAY_EASE
+      );
+    }
+
     const swayOffset = new THREE.Vector3(
-      sway.current.x * 0.7,
-      -sway.current.y * 0.4,
+      sway.current.x * SWAY_X,
+      -sway.current.y * SWAY_Y,
       0
     );
 

@@ -13,6 +13,8 @@ export type Link = {
  * so `from` carries the number that was beaten and the UI renders the delta.
  */
 export type Metric = {
+  /** The one figure worth remembering. Rendered in the accent color. */
+  key?: boolean;
   label: string;
   value: string;
   /** Baseline the value improved on. */
@@ -36,11 +38,24 @@ export type Experience = {
   links?: Link[];
 };
 
+/** Folders in the experiment tree, in display order. */
+export const CATEGORIES = [
+  { id: "ml-cv", label: "ml-cv", blurb: "Learning and perception systems" },
+  { id: "robotics-controls", label: "robotics-controls", blurb: "Things that move" },
+  { id: "full-stack", label: "full-stack", blurb: "End-to-end products" },
+  { id: "data-ai", label: "data-ai", blurb: "Analysis and classical AI" },
+] as const;
+
+export type CategoryId = (typeof CATEGORIES)[number]["id"];
+
 export type Project = {
   id: string;
   title: string;
   /** Short name used in the index rail. */
   codename: string;
+  /** URL segment: /projects/<slug>. Stable — changing one breaks shared links. */
+  slug: string;
+  category: CategoryId;
   date: string;
   start: number;
   tags: string[];
@@ -67,7 +82,7 @@ export const EXPERIENCES: Experience[] = [
     period: "Jun 2026 — Present",
     start: 202606,
     metrics: [
-      { label: "Pixel accuracy", value: "82%", from: "62%", dir: "up" },
+      { key: true, label: "Pixel accuracy", value: "82%", from: "62%", dir: "up" },
       { label: "Parameters cut", value: "110M+", dir: "down" },
       { label: "Compute cost", value: "~80%", dir: "down" },
     ],
@@ -87,7 +102,7 @@ export const EXPERIENCES: Experience[] = [
     start: 202609,
     metrics: [
       { label: "Transcripts processed", value: "45k+" },
-      { label: "GPU memory", value: "~70%", dir: "down" },
+      { key: true, label: "GPU memory", value: "~70%", dir: "down" },
       { label: "Inference time", value: "~40%", dir: "down" },
     ],
     stack: ["Python", "BERTopic", "Qwen3-Embedding-8B", "Quantization", "Pandas"],
@@ -105,7 +120,7 @@ export const EXPERIENCES: Experience[] = [
     period: "Jun 2026 — Aug 2026",
     start: 202606.5,
     metrics: [
-      { label: "ROC-AUC", value: "0.81", from: "0.73", dir: "up" },
+      { key: true, label: "ROC-AUC", value: "0.81", from: "0.73", dir: "up" },
       { label: "RNA samples", value: "1.1M+" },
       { label: "Instruction pairs", value: "220K+" },
     ],
@@ -128,7 +143,7 @@ export const EXPERIENCES: Experience[] = [
     period: "Aug 2026 — Oct 2026",
     start: 202608,
     metrics: [
-      { label: "Tool-calling functions", value: "32" },
+      { key: true, label: "Tool-calling functions", value: "32" },
       { label: "Write operation types", value: "23" },
       { label: "Audit findings closed", value: "10" },
     ],
@@ -147,7 +162,7 @@ export const EXPERIENCES: Experience[] = [
     period: "Apr 2026 — Present",
     start: 202604,
     metrics: [
-      { label: "Detection latency", value: "sub-30ms", dir: "down" },
+      { key: true, label: "Detection latency", value: "sub-30ms", dir: "down" },
       { label: "Precision / recall", value: "96.5 / 94.9%" },
       { label: "Localization error", value: "sub-5cm", dir: "down" },
     ],
@@ -183,7 +198,7 @@ export const EXPERIENCES: Experience[] = [
     period: "Apr 2025 — Apr 2026",
     start: 202504,
     metrics: [
-      { label: "Audience interaction", value: "60%", dir: "up" },
+      { key: true, label: "Audience interaction", value: "60%", dir: "up" },
       { label: "New followers", value: "1,000+", dir: "up" },
     ],
     stack: ["HTML", "CSS", "JavaScript", "Canva", "Buffer", "CapCut"],
@@ -200,12 +215,14 @@ export const PROJECTS: Project[] = [
     id: "viper",
     title: "AI-Generated Image Forensics Pipeline",
     codename: "VIPER",
+    slug: "viper",
+    category: "ml-cv",
     date: "Apr 2026",
     start: 202604,
     headline: "1st place — UCI Datathon 2026",
     tags: ["ML", "Computer Vision", "Data Science"],
     metrics: [
-      { label: "Accuracy", value: "98.9%" },
+      { key: true, label: "Accuracy", value: "98.9%" },
       { label: "AUC-ROC", value: "0.98+" },
       { label: "Classification error", value: "55%", dir: "down" },
     ],
@@ -227,12 +244,14 @@ export const PROJECTS: Project[] = [
     id: "nimbus",
     title: "Real-Time Sign-Language-to-English Translation",
     codename: "NIMBUS",
+    slug: "nimbus",
+    category: "ml-cv",
     date: "Apr 2026",
     start: 202604.5,
     headline: "800ms to 15ms client-side inference",
     tags: ["ML", "Full-Stack", "Cloud", "Edge AI"],
     metrics: [
-      { label: "Inference latency", value: "15ms", from: "800ms", dir: "down" },
+      { key: true, label: "Inference latency", value: "15ms", from: "800ms", dir: "down" },
       { label: "Keypoints at 30 FPS", value: "55" },
       { label: "Translation round-trip", value: "1.5s", dir: "down" },
     ],
@@ -248,13 +267,15 @@ export const PROJECTS: Project[] = [
     id: "sixeyes",
     title: "Drone Fleet Intelligence Dashboard",
     codename: "SIX EYES",
+    slug: "six-eyes",
+    category: "robotics-controls",
     date: "Jun 2026",
     start: 202606,
     headline: "6 concurrent UAVs at 20Hz telemetry",
     tags: ["Robotics", "Computer Vision", "Full-Stack", "Defense"],
     metrics: [
       { label: "Concurrent UAVs", value: "6" },
-      { label: "Telemetry rate", value: "20Hz" },
+      { key: true, label: "Telemetry rate", value: "20Hz" },
       { label: "Area coverage", value: "100%" },
     ],
     stack: ["React", "TypeScript", "Vite", "Zustand", "Python", "WebSockets", "Shapely", "Mapbox", "YOLOv8n"],
@@ -269,12 +290,14 @@ export const PROJECTS: Project[] = [
     id: "tvc",
     title: "TVC Rocket Flight Simulation",
     codename: "TVC ROCKET",
+    slug: "tvc-rocket",
+    category: "robotics-controls",
     date: "May 2026",
     start: 202605,
     headline: "6-DOF thrust vector control on a 10ms loop",
     tags: ["Controls", "Simulation", "Defense"],
     metrics: [
-      { label: "Control loop", value: "10ms" },
+      { key: true, label: "Control loop", value: "10ms" },
       { label: "GNC modules", value: "6" },
       { label: "Perturbation axes", value: "3" },
     ],
@@ -289,12 +312,14 @@ export const PROJECTS: Project[] = [
     id: "parceliq",
     title: "Parcel Risk Intelligence Platform",
     codename: "PARCELIQ",
+    slug: "parceliq",
+    category: "ml-cv",
     date: "Mar 2026",
     start: 202603,
     headline: "92% boundary confidence on footprint extraction",
     tags: ["ML", "Computer Vision", "Full-Stack"],
     metrics: [
-      { label: "Boundary confidence", value: "92%" },
+      { key: true, label: "Boundary confidence", value: "92%" },
       { label: "Spatial features", value: "9" },
       { label: "Training rows", value: "2,000+" },
     ],
@@ -309,12 +334,14 @@ export const PROJECTS: Project[] = [
     id: "f1",
     title: "F1 Pit Stop Strategy RL Model",
     codename: "F1 STRATEGY",
+    slug: "f1-strategy",
+    category: "ml-cv",
     date: "Jan 2026",
     start: 202601,
     headline: "DQN agent over a custom lap-by-lap MDP",
     tags: ["Reinforcement Learning", "ML", "Data Science"],
     metrics: [
-      { label: "Drivers compared", value: "20" },
+      { key: true, label: "Drivers compared", value: "20" },
       { label: "Seasons ingested", value: "3" },
       { label: "Tests written", value: "50" },
     ],
@@ -331,12 +358,14 @@ export const PROJECTS: Project[] = [
     id: "thetatau",
     title: "Theta Tau Hybrid RC Car — Embedded Systems",
     codename: "HYBRID RC",
+    slug: "hybrid-rc",
+    category: "robotics-controls",
     date: "Jan 2026 — Present",
     start: 202601.5,
     headline: "STM32 control across gas-electric transitions",
     tags: ["Embedded", "Hardware", "C/C++"],
     metrics: [
-      { label: "Bus protocols", value: "3" },
+      { key: true, label: "Bus protocols", value: "3" },
       { label: "Powertrain modes", value: "2" },
     ],
     stack: ["C/C++", "STM32CubeIDE", "PID", "PWM", "UART", "SPI", "I2C"],
@@ -350,6 +379,8 @@ export const PROJECTS: Project[] = [
     id: "quantum",
     title: "Quantum Particle Simulator Portfolio",
     codename: "THIS SITE",
+    slug: "this-site",
+    category: "full-stack",
     date: "Mar 2026",
     start: 202603.5,
     headline: "You are inside it",
@@ -366,12 +397,14 @@ export const PROJECTS: Project[] = [
     id: "foundationfix",
     title: "FoundationFix — AI Foundation Shade Matching",
     codename: "FOUNDATIONFIX",
+    slug: "foundationfix",
+    category: "full-stack",
     date: "Nov 2025",
     start: 202511,
     headline: "30%+ better color match, sub-second pipeline",
     tags: ["Full-Stack", "Computer Vision", "IoT"],
     metrics: [
-      { label: "Color-match accuracy", value: "30%+", dir: "up" },
+      { key: true, label: "Color-match accuracy", value: "30%+", dir: "up" },
       { label: "Skin regions", value: "10" },
       { label: "Dispense time", value: "25s", dir: "down" },
     ],
@@ -388,12 +421,14 @@ export const PROJECTS: Project[] = [
     id: "stock",
     title: "Machine Learning Stock Prediction Model",
     codename: "S&P FORECAST",
+    slug: "sp-forecast",
+    category: "data-ai",
     date: "Jan 2025",
     start: 202501,
     headline: "59% precision over 50+ years of data",
     tags: ["ML", "Data Science", "Finance"],
     metrics: [
-      { label: "Precision", value: "59%" },
+      { key: true, label: "Precision", value: "59%" },
       { label: "Accuracy", value: "55%" },
       { label: "Years of data", value: "50+" },
     ],
@@ -408,12 +443,14 @@ export const PROJECTS: Project[] = [
     id: "tictactoe",
     title: "AI Tic-Tac-Toe Agent",
     codename: "MINIMAX",
+    slug: "minimax",
+    category: "data-ai",
     date: "Dec 2024",
     start: 202412,
     headline: "0% loss rate, 99.8% faster search",
     tags: ["AI", "Algorithms"],
     metrics: [
-      { label: "Loss rate", value: "0%" },
+      { key: true, label: "Loss rate", value: "0%" },
       { label: "Compute time", value: "99.8%", dir: "down" },
     ],
     stack: ["Python", "PyGame", "Minimax", "Alpha-Beta Pruning"],
@@ -427,12 +464,14 @@ export const PROJECTS: Project[] = [
     id: "twitter",
     title: "Twitter Product Sentiment Scraper",
     codename: "SENTIMENT",
+    slug: "sentiment",
+    category: "data-ai",
     date: "Oct 2024",
     start: 202410,
     headline: "Polarity scoring over 100+ tweets",
     tags: ["Data Science", "NLP"],
     metrics: [
-      { label: "Tweets analyzed", value: "100+" },
+      { key: true, label: "Tweets analyzed", value: "100+" },
       { label: "Sentiment classes", value: "3" },
     ],
     stack: ["Python", "Tweepy", "TextBlob", "Pandas", "Matplotlib"],
@@ -504,3 +543,18 @@ export const SORTED_EXPERIENCES = [...EXPERIENCES].sort((a, b) => {
   return ongoing(b) - ongoing(a) || b.start - a.start;
 });
 export const SORTED_PROJECTS = [...PROJECTS].sort((a, b) => b.start - a.start);
+
+/** Projects grouped into tree folders, each sorted most-recent-first. */
+export const PROJECT_TREE = CATEGORIES.map((c) => ({
+  ...c,
+  projects: SORTED_PROJECTS.filter((p) => p.category === c.id),
+}));
+
+export function projectBySlug(slug: string): Project | undefined {
+  return PROJECTS.find((p) => p.slug === slug);
+}
+
+/** Folder holding a given project, for auto-expanding the tree on deep link. */
+export function categoryOfSlug(slug: string): CategoryId | undefined {
+  return projectBySlug(slug)?.category;
+}

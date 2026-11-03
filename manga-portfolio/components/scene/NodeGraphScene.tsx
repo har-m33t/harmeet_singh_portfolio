@@ -14,12 +14,21 @@ import {
   Vignette,
 } from "@react-three/postprocessing";
 
-export function NodeGraphScene() {
+export function NodeGraphScene({ dimmed = false }: { dimmed?: boolean }) {
   return (
-    <div className="absolute inset-0">
-      <Canvas camera={{ position: [0, 0, 14], fov: 45 }} dpr={[1, 1.8]}>
+    <div
+      className="absolute inset-0 transition-opacity duration-500 ease-out-lab"
+      // An open panel is the subject; the scene behind it drops back to 30%.
+      style={{ opacity: dimmed ? 0.3 : 1 }}
+    >
+      <Canvas
+        camera={{ position: [0, 0, 14], fov: 45 }}
+        // Half resolution behind an open panel — the scene is only framing
+        // then, and the post-processing stack is the expensive part.
+        dpr={dimmed ? 1 : [1, 1.8]}
+      >
         <Suspense fallback={null}>
-          <fog attach="fog" args={["#000000", 18, 50]} />
+          <fog attach="fog" args={["#0a0a0a", 18, 50]} />
           <ambientLight intensity={0.4} />
           <directionalLight
             position={[5, 8, 5]}

@@ -2,6 +2,7 @@
 
 import { Fragment, ReactNode } from "react";
 import type { Metric } from "@/lib/content";
+import { useCountUp } from "@/lib/motion";
 
 /**
  * Measured quantities lead by contrast and scale: white against grey labels.
@@ -32,7 +33,8 @@ const METRIC = buildMetricPattern();
 /**
  * Lifts measured quantities out of body copy, one step brighter than the
  * surrounding grey. MetricStrip keeps the headline figures; this is the
- * quieter in-sentence version of the same idea.
+ * quieter in-sentence version of the same idea. Deliberately not accent
+ * coloured — the accent marks state, not every number on the page.
  */
 export function Readout({ children }: { children: string }) {
   const parts: ReactNode[] = [];
@@ -59,51 +61,72 @@ export function Readout({ children }: { children: string }) {
   );
 }
 
+function MetricCell({ metric, animate }: { metric: Metric; animate: boolean }) {
+  const shown = useCountUp(animate ? metric.value : "", 600);
+  const value = animate ? shown : metric.value;
+
+  return (
+    <div
+      // Narrow screens get a compact label/value row; from sm up, a stacked cell.
+      className="relative flex items-baseline justify-between gap-3 bg-panel px-3 py-2 sm:block sm:py-2.5"
+    >
+      {/* A hairline on the key cell, so the highlight survives a greyscale print. */}
+      {metric.key && (
+        <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-accent" />
+      )}
+      <dt className="text-[9px] uppercase leading-tight tracking-[0.16em] text-trace">
+        {metric.label}
+      </dt>
+      <dd
+        className={`flex shrink-0 items-baseline gap-1.5 font-sans text-base leading-none tracking-tight tabular-nums sm:mt-1.5 sm:text-xl ${
+          metric.key ? "text-accent" : "text-fg"
+        }`}
+      >
+        {metric.from && (
+          <>
+            <span className="font-mono text-[11px] text-trace line-through decoration-trace/60">
+              {metric.from}
+            </span>
+            <span aria-hidden className="font-mono text-[11px] text-trace">
+              →
+            </span>
+          </>
+        )}
+        <span>
+          {metric.dir && !metric.from && (
+            <span aria-hidden className="mr-0.5 text-sm">
+              {metric.dir === "up" ? "↑" : "↓"}
+            </span>
+          )}
+          {value}
+        </span>
+      </dd>
+    </div>
+  );
+}
+
 /**
  * Headline results as channel readouts. Where a baseline exists the cell shows
- * the delta, because the claim is the improvement, not the number alone.
+ * the delta, because the claim is the improvement, not the number alone. One
+ * cell per entry is marked `key` and carries the accent — the single figure
+ * worth remembering.
  */
 export function MetricStrip({
   metrics,
   className = "",
+  countUp = false,
 }: {
   metrics: Metric[];
   className?: string;
+  /** Count the figures up from zero. Only for panels that just opened. */
+  countUp?: boolean;
 }) {
   return (
     <dl
       className={`grid gap-px border border-white/15 bg-white/15 sm:grid-cols-[repeat(auto-fit,minmax(0,1fr))] ${className}`}
     >
       {metrics.map((m) => (
-        <div
-          key={m.label}
-          // Narrow screens get a compact label/value row; from sm up, a stacked cell.
-          className="flex items-baseline justify-between gap-3 bg-black px-3 py-2 sm:block sm:py-2.5"
-        >
-          <dt className="text-[9px] uppercase leading-tight tracking-[0.16em] text-trace">
-            {m.label}
-          </dt>
-          <dd className="flex shrink-0 items-baseline gap-1.5 font-sans text-base leading-none tracking-tight text-fg sm:mt-1.5 sm:text-xl">
-            {m.from && (
-              <>
-                <span className="font-mono text-[11px] text-trace line-through decoration-trace/60">
-                  {m.from}
-                </span>
-                <span aria-hidden className="font-mono text-[11px] text-trace">
-                  →
-                </span>
-              </>
-            )}
-            <span>
-              {m.dir && !m.from && (
-                <span aria-hidden className="mr-0.5 text-sm">
-                  {m.dir === "up" ? "↑" : "↓"}
-                </span>
-              )}
-              {m.value}
-            </span>
-          </dd>
-        </div>
+        <MetricCell key={m.label} metric={m} animate={countUp} />
       ))}
     </dl>
   );
@@ -126,18 +149,89 @@ export function Target({ href, children }: { href: string; children: ReactNode }
       target="_blank"
       rel="noopener noreferrer"
       // No uppercase: these carry repo paths and URLs, which must stay readable as written.
-      className="inline-flex items-center gap-1.5 border border-white/35 px-2 py-1 text-[10px] tracking-[0.06em] text-fg/90 transition-colors hover:border-white hover:bg-white hover:text-black focus-visible:border-white focus-visible:bg-white focus-visible:text-black"
+      className="inline-flex items-center gap-1.5 border border-white/35 px-2 py-1 text-[10px] tracking-[0.06em] text-fg/90 transition-colors hover:border-accent hover:bg-accent hover:text-black focus-visible:border-accent focus-visible:bg-accent focus-visible:text-black"
     >
       {children}
     </a>
   );
 }
 
-/** Marks a project whose source is not published. */
-export function Sealed() {
+/**
+ * Source as a browser URL bar. Public repos are a real link; private ones keep
+ * the same chrome with the padlock closed, so the reader can see the work
+ * exists and see immediately why they cannot open it.
+ */
+export function SourceBar({ repo, live }: { repo?: string; live?: string }) {
+  const path = repo?.replace(/^https?:\/\//, "");
+
   return (
-    <span className="inline-block border border-dashed border-white/25 px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-trace">
-      Source not public
-    </span>
+    <div className="space-y-2">
+      <div className="flex items-stretch border border-white/20 bg-black/60">
+        <span
+          aria-hidden
+          className={`flex items-center border-r border-white/15 px-2 text-[11px] ${
+            repo ? "text-accent" : "text-trace"
+          }`}
+        >
+          {repo ? "⌁" : "🔒"}
+        </span>
+
+        {repo ? (
+          <a
+            href={repo}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="min-w-0 flex-1 truncate px-2 py-1.5 text-[10px] text-fgMuted transition-colors hover:text-accent focus-visible:text-accent"
+          >
+            {path}
+          </a>
+        ) : (
+          <span className="min-w-0 flex-1 truncate px-2 py-1.5 text-[10px] text-trace">
+            not published
+          </span>
+        )}
+
+        <span
+          className={`flex items-center border-l border-white/15 px-2 text-[9px] uppercase tracking-[0.14em] ${
+            repo ? "text-accent" : "text-trace"
+          }`}
+        >
+          {repo ? "Public" : "Private"}
+        </span>
+      </div>
+
+      {live && (
+        <a
+          href={live}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 border border-white/20 bg-black/60 px-2 py-1.5 text-[10px] text-fgMuted transition-colors hover:border-accent hover:text-accent"
+        >
+          <span aria-hidden className="text-accent">
+            ↗
+          </span>
+          <span className="truncate">{live.replace(/^https?:\/\//, "")}</span>
+        </a>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Viewfinder frame — four accent corners around project media. The inner span
+ * carries the bottom two corners; CSS only gives each element two pseudos.
+ */
+export function Viewfinder({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`viewfinder ${className}`}>
+      <span aria-hidden className="vf-b" />
+      {children}
+    </div>
   );
 }

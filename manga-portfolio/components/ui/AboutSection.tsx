@@ -6,11 +6,22 @@ import { SectionShell } from "./SectionShell";
 import { StackLine } from "./Readout";
 import { PROFILE, SKILLS } from "@/lib/content";
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  /** Reserved for live state — the accent means "currently true", not "important". */
+  accent?: boolean;
+}) {
   return (
     <div className="flex justify-between gap-4 border-b border-white/10 py-1.5 last:border-b-0">
       <span className="shrink-0 text-trace">{label}</span>
-      <span className="text-right text-fg/90">{value}</span>
+      <span className={`text-right ${accent ? "text-accent" : "text-fg/90"}`}>
+        {value}
+      </span>
     </div>
   );
 }
@@ -52,7 +63,7 @@ export function AboutSection() {
 
           <div className="border border-white/25 px-3 py-2 text-[11px]">
             <Row label="Particle" value={PROFILE.particleId} />
-            <Row label="State" value="Active" />
+            <Row label="State" value="Active" accent />
             <Row label="Environment" value="UC Irvine" />
             <Row label="Degree" value="B.S. CS (Honors)" />
             <Row label="GPA" value={PROFILE.gpa} />

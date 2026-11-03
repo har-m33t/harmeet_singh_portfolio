@@ -111,7 +111,7 @@ export function ContactSection() {
               <button
                 type="button"
                 onClick={() => setSubmitState("idle")}
-                className="border border-white/40 px-3 py-1 text-[10px] uppercase tracking-[0.16em] hover:bg-white hover:text-black"
+                className="border border-white/40 px-3 py-1 text-[10px] uppercase tracking-[0.16em] transition-colors hover:border-accent hover:bg-accent hover:text-black"
               >
                 Send another
               </button>
@@ -139,7 +139,7 @@ export function ContactSection() {
                   name="name"
                   autoComplete="name"
                   disabled={isSubmitting}
-                  className="mt-1 w-full border border-white/30 bg-black px-2 py-1.5 text-xs focus:border-white focus:outline-none disabled:opacity-40"
+                  className="mt-1 w-full border border-white/30 bg-black px-2 py-1.5 text-xs focus:border-accent focus:outline-none disabled:opacity-40"
                 />
               </label>
               <label className="block">
@@ -150,7 +150,7 @@ export function ContactSection() {
                   name="email"
                   autoComplete="email"
                   disabled={isSubmitting}
-                  className="mt-1 w-full border border-white/30 bg-black px-2 py-1.5 text-xs focus:border-white focus:outline-none disabled:opacity-40"
+                  className="mt-1 w-full border border-white/30 bg-black px-2 py-1.5 text-xs focus:border-accent focus:outline-none disabled:opacity-40"
                 />
               </label>
               <label className="block">
@@ -161,7 +161,7 @@ export function ContactSection() {
                   name="message"
                   maxLength={5000}
                   disabled={isSubmitting}
-                  className="mt-1 w-full resize-none border border-white/30 bg-black px-2 py-1.5 text-xs focus:border-white focus:outline-none disabled:opacity-40"
+                  className="mt-1 w-full resize-none border border-white/30 bg-black px-2 py-1.5 text-xs focus:border-accent focus:outline-none disabled:opacity-40"
                 />
               </label>
 
@@ -182,7 +182,7 @@ export function ContactSection() {
                     ? "border-red-400 text-red-400"
                     : isSubmitting
                       ? "cursor-not-allowed border-white/40 text-white/40"
-                      : "border-white hover:bg-white hover:text-black"
+                      : "border-accent text-accent hover:bg-accent hover:text-black"
                 }`}
               >
                 {BUTTON_LABELS[submitState]}

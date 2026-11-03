@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Analytics } from "@vercel/analytics/next"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SiteShell } from "@/components/SiteShell";
 import "./globals.css";
 
 const DESCRIPTION =
@@ -8,7 +9,10 @@ const DESCRIPTION =
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://harmeet-singh.dev"),
-  title: "Harmeet Singh — ML, Computer Vision & Robotics",
+  title: {
+    default: "Harmeet Singh — ML, Computer Vision & Robotics",
+    template: "%s — Harmeet Singh",
+  },
   description: DESCRIPTION,
   icons: {
     icon: "/favicon.ico",
@@ -48,6 +52,12 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-bg text-fg font-mono antialiased">
+        {/*
+         * The shell owns the scene and every panel, and is mounted once for
+         * the life of the session. Route segments below carry only metadata —
+         * they exist so each section has a real, shareable URL.
+         */}
+        <SiteShell />
         {children}
         <Analytics />
         <SpeedInsights />
