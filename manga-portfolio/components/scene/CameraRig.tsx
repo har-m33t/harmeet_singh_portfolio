@@ -6,6 +6,8 @@ import * as THREE from "three";
 import { useNodeNavigation } from "@/lib/useNodeNavigation";
 import { NODE_DEFS } from "@/lib/navigation";
 import { dragState } from "@/lib/dragState";
+import { usePrefersReducedMotion } from "@/lib/motion";
+import { currentSurge } from "@/lib/surge";
 
 const ZOOM_MIN = 5;
 const ZOOM_MAX = 40;
@@ -20,10 +22,14 @@ const SWAY_X = 0.21;
 const SWAY_Y = 0.12;
 /** How fast sway eases toward its target. Hovering a node freezes it outright. */
 const SWAY_EASE = 0.08;
+/** Supercharge kick: how far the camera is pulled in, and how hard it rattles. */
+const SURGE_PULL = 1.1;
+const SURGE_SHAKE = 0.045;
 
 export function CameraRig() {
   const { camera } = useThree();
   const { targetNode, hoveredNode } = useNodeNavigation();
+  const reduced = usePrefersReducedMotion();
   const zoomDistance = useRef(ZOOM_DEFAULT);
   const currentZoom = useRef(ZOOM_DEFAULT);
   const targetPos = useRef(new THREE.Vector3(0, 0, ZOOM_DEFAULT));
@@ -68,8 +74,10 @@ export function CameraRig() {
     };
 
     const handleDown = (e: PointerEvent) => {
-      // Dragging orbits the graph; inside a panel the pointer belongs to the UI.
-      if ((e.target as HTMLElement | null)?.closest("[data-panel]")) return;
+      // Dragging orbits the graph; on a panel or a control the pointer belongs
+      // to the UI, so pressing Supercharge must not also grab the camera.
+      if ((e.target as HTMLElement | null)?.closest("[data-panel], button, a"))
+        return;
       dragState.reset();
       drag.current = { active: true, x: e.clientX, y: e.clientY };
     };
@@ -113,7 +121,9 @@ export function CameraRig() {
     return () => window.removeEventListener("wheel", handleWheel);
   }, []);
 
-  useFrame(() => {
+  useFrame((state) => {
+    const surge = currentSurge();
+
     currentZoom.current = THREE.MathUtils.lerp(
       currentZoom.current,
       zoomDistance.current,
@@ -136,7 +146,12 @@ export function CameraRig() {
       dir.applyAxisAngle(right, orbit.current.elevation);
     }
 
-    targetPos.current.lerp(dir.multiplyScalar(currentZoom.current), 0.06);
+    // A charge leans the camera in without touching the user's own zoom, so
+    // releasing the surge returns to exactly the distance they had chosen.
+    targetPos.current.lerp(
+      dir.multiplyScalar(currentZoom.current - (reduced ? 0 : surge * SURGE_PULL)),
+      0.06
+    );
 
     // Freeze the drift the moment a node is hovered, so the thing you are
     // aiming at stops moving. Released, it eases back rather than snapping.
@@ -161,6 +176,20 @@ export function CameraRig() {
 
     const desiredPos = targetPos.current.clone().add(swayOffset);
     (camera as THREE.PerspectiveCamera).position.lerp(desiredPos, 0.08);
+
+    /*
+     * Rattle is added after the easing, not before it: at 0.08 per frame the
+     * lerp is a low-pass filter and would swallow a 6Hz shake entirely.
+     * Two fast sines rather than per-frame randomness, so it reads as a
+     * machine under load instead of a dropped frame.
+     */
+    const rattle = reduced ? 0 : surge * SURGE_SHAKE;
+    if (rattle > 0.0001) {
+      const t = state.clock.getElapsedTime();
+      camera.position.x += Math.sin(t * 37.0) * rattle;
+      camera.position.y += Math.cos(t * 31.0) * rattle;
+    }
+
     camera.lookAt(0, 0, 0);
   });
 

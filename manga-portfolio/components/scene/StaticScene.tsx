@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { NODE_DEFS, type NodeId } from "@/lib/navigation";
+import { SurgeButton } from "@/components/ui/SurgeButton";
 
 /**
  * Phone replacement for the WebGL scene. Same tetrahedral graph, drawn once —
@@ -53,12 +54,30 @@ export function StaticScene({ active }: { active: NodeId }) {
               y1={CENTER.y}
               x2={p.x}
               y2={p.y}
+              className="static-line"
               stroke={on ? "var(--accent)" : "rgba(255,255,255,0.2)"}
               vectorEffect="non-scaling-stroke"
               strokeWidth={on ? 1.5 : 1}
             />
           );
         })}
+
+        {/*
+         * The shot: fired from the viewer's own corner of the screen into the
+         * core. pathLength normalises the line to 100 units so the dash that
+         * travels along it is the same length whatever the viewport shape.
+         */}
+        <line
+          className="static-beam"
+          x1={100}
+          y1={100}
+          x2={CENTER.x}
+          y2={CENTER.y}
+          pathLength={100}
+          stroke="var(--accent)"
+          strokeWidth={2}
+          vectorEffect="non-scaling-stroke"
+        />
       </svg>
 
       {/* Observer */}
@@ -68,7 +87,7 @@ export function StaticScene({ active }: { active: NodeId }) {
       >
         <span
           aria-hidden
-          className="mx-auto block h-3 w-3 rounded-full bg-white shadow-glow"
+          className="static-core mx-auto block h-3 w-3 rounded-full bg-white shadow-glow"
         />
         <span className="mt-1.5 block text-[9px] uppercase tracking-[0.2em] text-trace">
           You
@@ -110,6 +129,12 @@ export function StaticScene({ active }: { active: NodeId }) {
         aria-label="Sections"
         className="absolute inset-x-0 bottom-0 border-t border-white/15 bg-black/80 backdrop-blur-sm"
       >
+        {/* Inside the nav block rather than floating over the graph, so it can
+            never land on top of a node label at an awkward viewport height. */}
+        <div className="flex justify-center border-b border-white/10 px-4 py-3">
+          <SurgeButton />
+        </div>
+
         <ul className="divide-y divide-white/10">
           {sections.map((n) => {
             const on = active === n.id;

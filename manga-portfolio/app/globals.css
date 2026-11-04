@@ -308,6 +308,83 @@ body::after {
   animation: glitch-y 0.6s ease-out;
 }
 
+/*
+ * Supercharge, phone edition. The phone scene is plain DOM, so a press arrives
+ * as a `surging` class on <html> for the same window the WebGL envelope runs
+ * for, and the surge is animated here instead of in a shader.
+ */
+@keyframes surge-core {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 14px 2px rgb(var(--accent-rgb) / 0.45);
+  }
+  50% {
+    transform: scale(1.4);
+    box-shadow: 0 0 36px 10px rgb(var(--accent-rgb) / 0.9);
+  }
+}
+
+@keyframes surge-line {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* The ray crosses the gap: a short dash travelling the whole normalised path. */
+@keyframes surge-beam {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -116;
+  }
+}
+
+/* Mains hum on the button's bolt glyph while it holds a charge. */
+@keyframes surge-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 0.3;
+  }
+  70% {
+    opacity: 0.85;
+  }
+}
+
+.static-beam {
+  opacity: 0;
+  stroke-dasharray: 16 200;
+}
+
+.firing .static-beam {
+  opacity: 1;
+  animation: surge-beam 380ms linear 1;
+}
+
+.surging .static-core {
+  background: var(--accent);
+  animation: surge-core 420ms var(--ease-out) infinite;
+}
+
+/* CSS wins over the stroke presentation attribute, so the lines go hot. */
+.surging .static-line {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  animation: surge-line 300ms steps(3, end) infinite;
+}
+
+.surge-flicker {
+  animation: surge-flicker 160ms steps(2, end) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -315,6 +392,11 @@ body::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* A bolt flying across the screen is motion; it is skipped, not hurried. */
+  .firing .static-beam {
+    opacity: 0;
   }
 
   /* The pointer-tracked grid highlight is motion too — hold it still. */

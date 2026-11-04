@@ -10,6 +10,7 @@ import { useIsLabViewport } from "@/lib/useMediaQuery";
 import { StaticScene } from "@/components/scene/StaticScene";
 import { HudOverlay } from "@/components/ui/HudOverlay";
 import { SkipNav } from "@/components/ui/SkipNav";
+import { SurgeButton } from "@/components/ui/SurgeButton";
 import { AboutSection } from "@/components/ui/AboutSection";
 import { ProjectsSection } from "@/components/ui/ProjectsSection";
 import { WorkSection } from "@/components/ui/WorkSection";
@@ -63,9 +64,13 @@ export function SiteShell() {
       </AnimatePresence>
 
       {!panelOpen && (
-        /* Hidden on phones: the static scene puts its section list there. */
-        <div className="pointer-events-none fixed bottom-3 left-1/2 z-10 hidden -translate-x-1/2 text-[10px] uppercase tracking-[0.2em] text-trace lab:block">
-          Quantum entanglement simulator
+        /* Hidden on phones: the static scene carries its own copy of these,
+           stacked above its section list where there is room for them. */
+        <div className="pointer-events-none fixed bottom-10 left-1/2 z-[15] hidden -translate-x-1/2 flex-col items-center gap-2.5 lab:flex">
+          <SurgeButton />
+          <div className="text-[10px] uppercase tracking-[0.2em] text-trace">
+            Quantum entanglement simulator
+          </div>
         </div>
       )}
     </main>
